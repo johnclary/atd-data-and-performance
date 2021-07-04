@@ -9,7 +9,7 @@ import Modal from "react-bootstrap/Modal";
 import { BsSearch } from "react-icons/bs";
 import { FaCaretDown, FaCaretUp, FaMapMarkerAlt } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
-import Map, { easeToFeature } from "./Map";
+import Map, { easeToFeature, fitFeatureBounds } from "./Map";
 import Table from "./Table";
 import Navbar from "react-bootstrap/Navbar";
 /*
@@ -220,10 +220,19 @@ function MapModal({ showMap, setShowMap, children }) {
   );
 }
 
-
-const useDynamicStyles = (mapRef, layerId, selectedFeature, applyDynamicStyle) => {
+const useDynamicStyles = (
+  mapRef,
+  layerId,
+  selectedFeature,
+  applyDynamicStyle
+) => {
   React.useEffect(() => {
-    if (!applyDynamicStyle || !mapRef.current || !mapRef.current.getLayer(layerId)) return;
+    if (
+      !applyDynamicStyle ||
+      !mapRef.current ||
+      !mapRef.current.getLayer(layerId)
+    )
+      return;
     applyDynamicStyle(mapRef.current, selectedFeature);
   }, [mapRef, selectedFeature]);
 };
@@ -234,7 +243,7 @@ export default function GeoTable({
   layerStyle,
   filterDefs,
   applyDynamicStyle,
-  mapOverlayConfig
+  mapOverlayConfig,
 }) {
   const [showMap, setShowMap] = React.useState(false);
   const [selectedFeature, setSelectedFeature] = React.useState(null);
@@ -255,11 +264,19 @@ export default function GeoTable({
 
   const onRowClick = (feature) => {
     if (feature) {
-      easeToFeature(mapRef.current, feature);
+      if (feature.geometry.type === "Point") {
+        easeToFeature(mapRef.current, feature);
+      } else if (feature.geometry.type === "MultiPoint") {
+        fitFeatureBounds(mapRef.current, feature);
+      } else {
+        console.log(
+          `Cannot zoom to unspported geometry type: ${feature.geomtery.type}`
+        );
+      }
       setSelectedFeature(feature);
       setShowMap(true);
       setTimeout(() => {
-        mapRef.current?.resize();
+        mapRef.current.resize();
       }, 400);
     } else {
       setSelectedFeature(null);

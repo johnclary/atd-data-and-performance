@@ -107,29 +107,34 @@ const Marker = ({ map, feature }) => {
 };
 
 /**
- * Get the centroid coordinates from a multiPoint feature.
+ * Construct a bounding box from a multiPoint feature.
  **/
-const getMultipointCenter = (feature) => {
+const getMultiPointBounds = (feature) => {
   let bounds = new mapboxgl.LngLatBounds();
   feature.geometry.coordinates.forEach((coordinatePair) => {
     bounds.extend(coordinatePair);
   });
-  return bounds.getCenter();
+  return bounds;
 };
 
 /**
- * Pan and zoom to a map feature. Supports Point or MultiPoint geojson features.
+ * Pan and zoom to a map feature. Only supports Point geometries.
  **/
 export const easeToFeature = (map, feature) => {
-  const coordinates =
-    feature.geometry.type === "Point"
-      ? feature.geometry.coordinates
-      : getMultipointCenter(feature);
+  const coordinates = feature.geometry.coordinates;
   map.easeTo({
     center: coordinates,
     zoom: 13,
     duration: 1000,
   });
+};
+
+/**
+ * Zoom to a features bounding box.
+ **/
+export const fitFeatureBounds = (map, feature) => {
+  const bounds = getMultiPointBounds(feature);
+  map.fitBounds(bounds, { padding: 100 });
 };
 
 /**
@@ -155,7 +160,7 @@ const useMap = (mapContainerRef, mapRef) => {
  **/
 const MapOverlay = ({ selectedFeature, setSelectedFeature, config }) => {
   // TODO: add aria tags?
-  console.log(selectedFeature.properties)
+  console.log(selectedFeature.properties);
   return (
     <div className="map-overlay-container">
       <div className="list-group">
@@ -176,7 +181,9 @@ const MapOverlay = ({ selectedFeature, setSelectedFeature, config }) => {
           {config.bodyKeys &&
             config.bodyKeys.map((key) => {
               return (
-                <p key={key} className="mb-1">{`${key}: ${selectedFeature.properties[key] || "<none>"}`}</p>
+                <p key={key.key} className="mb-1">{`${key.label}: ${
+                  selectedFeature.properties[key.key] || "<none>"
+                }`}</p>
               );
             })}
         </div>
