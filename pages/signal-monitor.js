@@ -24,6 +24,15 @@ const OP_STATES = [
   { key: "3", label: "Comm Outage", color: "green" },
 ];
 
+const mapOverlayConfig = {
+  titleKey: "location_name",
+  bodyKeys: [
+    // { key: "signal_count", label: "# of Signals" },
+    // { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
+    // { key: "engineer_note", label: "Note" },
+  ],
+};
+
 const renderOperationState = (feature) => {
   const val = feature.properties["operation_state"];
   const thisOpState = OP_STATES.filter((opState) => {
@@ -143,6 +152,7 @@ export default function Viewer() {
           headers={TABLE_HEADERS}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
+          mapOverlayConfig={mapOverlayConfig}
         />
         <Row className="mt-4 mb-2 text-primary">
           <Col>

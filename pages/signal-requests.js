@@ -19,6 +19,15 @@ const SOCRATA_ENDPOINT = {
     "$limit=9999999&$order=location_name asc&$select=location_name,signal_id,signal_type,signal_status,location",
 };
 
+const mapOverlayConfig = {
+  titleKey: "location_name",
+  bodyKeys: [
+    // { key: "signal_count", label: "# of Signals" },
+    // { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
+    // { key: "engineer_note", label: "Note" },
+  ],
+};
+
 const STATUS_STYLES = {
   DESIGN: { label: "Design", color: "#fff", backgroundColor: "#7570b3" },
   CONSTRUCTION: {
@@ -122,7 +131,7 @@ export default function Viewer() {
           headers={TABLE_HEADERS}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
-
+          mapOverlayConfig={mapOverlayConfig}
         />
         <Row className="mt-4 mb-2 text-primary">
           <Col>

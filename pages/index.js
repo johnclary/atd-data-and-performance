@@ -49,21 +49,21 @@ const cards = {
       title: "Signal Assets",
       description:
         "Info about signal requests where you can search and browse info.",
-      href: "/signal-requests",
+      href: "/not-implemented",
       img: null,
     },
     {
       title: "Signs & Markings",
       description:
         "Info about signal requests where you can search and browse info.",
-      href: "/signal-requests",
+      href: "/not-implemented-2",
       img: null,
     },
     {
       title: "Preventative Maintenance",
       description:
         "Info about signal requests where you can search and browse info.",
-      href: "/signal-requests",
+      href: "/not-implemented-3",
       img: null,
     },
   ],
@@ -79,14 +79,14 @@ const cards = {
       title: "Data Catalog",
       description:
         "Info about signal requests where you can search and browse info.",
-      href: "/signal-requests",
+      href: "/not-implemented-4",
       img: null,
     },
     {
       title: "City of Austin Github",
       description:
         "Info about signal requests where you can search and browse info.",
-      href: "/signal-requests",
+      href: "/not-implemented-5",
       img: null,
     },
   ],
@@ -148,7 +148,7 @@ export default function Home() {
         <Row className="text-dts-4 mb-4">
           {cards.signal_operations.map((card) => {
             return (
-              <Col key={card.key} xs={6} md={3}>
+              <Col key={card.href} xs={6} md={3}>
                 <CardItem {...card} />
               </Col>
             );

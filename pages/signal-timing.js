@@ -3,11 +3,15 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Label } from "recharts";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import GeoTable from "../components/geotable/GeoTable";
 import useSocrata from "../utils/socrata.js";
+
+const formatPercent = (value, places) => {
+  return `${parseFloat(value * 100).toFixed(places)}%`;
+};
 
 const SOCRATA_ENDPOINT_CORRIDORS = {
   resourceId: "efct-8fs9",
@@ -50,7 +54,11 @@ const POINT_LAYER_STYLE = {
 
 const mapOverlayConfig = {
   titleKey: "system_name",
-  bodyKeys: ["total_vol", "vol_wavg_tt_pct_change", "engineer_note"],
+  bodyKeys: [
+    { key: "signal_count", label: "# of Signals" },
+    { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
+    { key: "engineer_note", label: "Note" },
+  ],
 };
 
 const applyDynamicStyle = (map, selectedFeature) => {
@@ -173,7 +181,7 @@ const useSummaryStats = (retimingDataFiltered, signalCorridorsRaw) => {
   // TODO: simplifiy with reducer
   const [summaryStats, setSummaryStats] = React.useState({
     complete: 0,
-    total: 0,
+    incomplete: 0,
   });
 
   React.useEffect(() => {
@@ -192,17 +200,19 @@ const useSummaryStats = (retimingDataFiltered, signalCorridorsRaw) => {
         return;
       }
       const existingSignalStatus = signalStatusIndex[signalId];
-
-      if (existingSignalStatus && existingSignalStatus !== "COMPLETED") {
+      // if the signal is in multiple corridors, it's counted as complete if any instance is complete
+      if (existingSignalStatus && existingSignalStatus == "COMPLETED") {
         return;
       }
-
       signalStatusIndex[signalId] = retimeStatus;
     });
-    let newSummaryStats = { complete: 0, total: 0 };
+    let newSummaryStats = { complete: 0, incomplete: 0 };
     Object.values(signalStatusIndex).forEach((status) => {
-      newSummaryStats.total++;
-      if (status === "COMPLETED") newSummaryStats.complete++;
+      if (status === "COMPLETED") {
+        newSummaryStats.complete++;
+      } else {
+        newSummaryStats.incomplete++;
+      }
     });
     setSummaryStats(newSummaryStats);
   }, [retimingDataFiltered]);
@@ -210,22 +220,25 @@ const useSummaryStats = (retimingDataFiltered, signalCorridorsRaw) => {
 };
 
 const ProgressChart = ({ summaryStats }) => {
-  const COLORS = ["#82ca9d", "#fcba03"];
+  const colors = { gray: "#bfbfbf", green: "#009406" };
   const [pieData, setPieData] = React.useState([]);
 
   React.useEffect(() => {
     let newPieData = [
       {
-        name: "Incomplete",
-        value: summaryStats.total - summaryStats.complete,
+        name: "incomplete",
+        value: summaryStats.incomplete,
       },
       {
-        name: "Complete",
+        name: "complete",
         value: summaryStats.complete,
       },
     ];
     setPieData(newPieData);
   }, [summaryStats]);
+
+  const pctComplete =
+    summaryStats.complete / (summaryStats.incomplete + summaryStats.complete);
 
   return (
     <ResponsiveContainer height={200}>
@@ -236,18 +249,34 @@ const ProgressChart = ({ summaryStats }) => {
           nameKey="name"
           cx="50%"
           cy="50%"
-          innerRadius={"40%"}
-          outerRadius={"70%"}
+          innerRadius={"70%"}
+          outerRadius={"100%"}
           startAngle={90}
           endAngle={550}
-          label
         >
-          <Cell fill={COLORS[0]} />
-          <Cell fill={COLORS[1]} />
+          <Cell fill={colors.gray} />
+          <Cell fill={colors.green} />
+          {/* <Label offset={0} position="center">
+            {formatPercent(pctComplete, 0)}
+          </Label> */}
+          <Label offset={0} position="center">
+            {`${summaryStats.complete} of ${
+              summaryStats.incomplete + summaryStats.complete
+            }`}
+          </Label>
         </Pie>
       </PieChart>
     </ResponsiveContainer>
   );
+};
+
+const retimingStatsReducer = (accumulator, currentValue) => {
+  accumulator.total_vol =
+    accumulator.total_vol + parseFloat(currentValue?.total_vol || 0);
+  accumulator.vol_wavg_tt_seconds =
+    accumulator.vol_wavg_tt_seconds +
+    parseFloat(currentValue?.vol_wavg_tt_seconds || 0);
+  return accumulator;
 };
 
 export default function Viewer() {
@@ -278,23 +307,14 @@ export default function Viewer() {
     signalCorridorsRaw?.data?.features || []
   );
 
+  let totalTravelTimeChange;
+  // this calls every render (~three times per year change). todo: use a hook
   if (retimingDataFiltered?.length > 0) {
-    let bob = retimingDataFiltered;
-
-    const reduceAll = (accumulator, currentValue) => {
-      accumulator.total_vol =
-        accumulator.total_vol + parseFloat(currentValue?.total_vol || 0);
-      accumulator.vol_wavg_tt_seconds =
-        accumulator.vol_wavg_tt_seconds +
-        parseFloat(currentValue?.vol_wavg_tt_seconds || 0);
-      return accumulator;
-    };
-
-    let totals = bob.reduce(reduceAll, {
+    let totals = retimingDataFiltered.reduce(retimingStatsReducer, {
       total_vol: 0,
       vol_wavg_tt_seconds: 0,
     });
-    console.log(totals.vol_wavg_tt_seconds / totals.total_vol);
+    totalTravelTimeChange = totals.vol_wavg_tt_seconds / totals.total_vol;
   }
   return (
     <>
@@ -307,6 +327,7 @@ export default function Viewer() {
         </Row>
         <Row>
           <Col xs={12} md={3}>
+            <Form.Label>Year</Form.Label>
             <Form.Select
               aria-label="Year selector"
               onChange={(e) => setSelectedYear(e.target.value)}
@@ -321,8 +342,23 @@ export default function Viewer() {
               })}
             </Form.Select>
           </Col>
-          <Col className="pb-2">
+        </Row>
+        <Row>
+          <Col>
+            <p>
+              This is some info about the page. The info here is about info for
+              this page. It's already been written somewhere else.
+            </p>
+            <p>
+              This is some info about the page. The info here is about info for
+              this page. It's already been written somewhere else.
+            </p>
+          </Col>
+          <Col xs={12} md={3}>
             <ProgressChart summaryStats={summaryStats} />
+          </Col>
+          <Col xs={12} md={3} className="text-center">
+            {totalTravelTimeChange && formatPercent(totalTravelTimeChange, 1)}
           </Col>
         </Row>
         <GeoTable
