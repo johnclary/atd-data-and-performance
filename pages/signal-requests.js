@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Head from "next/head";
+import React from "react";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-// custom components
-import Nav from "../components/Nav";
 import Footer from "../components/Footer";
-import GeoTable from "../components/geotable/GeoTable";
+import GeoList from "../components/geolist/GeoList";
+import Nav from "../components/Nav";
 import useSocrata from "../utils/socrata.js";
-
-const john = false;
 
 const SOCRATA_ENDPOINT = {
   resourceId: "p53x-x73x",
@@ -29,26 +24,32 @@ const mapOverlayConfig = {
 };
 
 const STATUS_STYLES = {
-  DESIGN: { label: "Design", color: "#fff", backgroundColor: "#7570b3" },
+  DESIGN: {
+    label: "Design",
+    color: "#fff",
+    borderColor: "#7570b3",
+    color: "#7570b3",
+  },
   CONSTRUCTION: {
     label: "Construction",
-    color: "#fff",
-    backgroundColor: "#d95f02",
+    borderColor: "#d95f02",
+    color: "#d95f02",
   },
   TURNED_ON: {
     label: "Turned On",
     color: "#fff",
-    backgroundColor: "#1b9e77",
+    borderColor: "#1b9e77",
+    color: "#1b9e77",
   },
   "READY FOR CONSTRUCTION": {
     label: "Ready for Construction",
     color: "#fff",
-    backgroundColor: "#1b9e77",
-  }
+    borderColor: "#1b9e77",
+    color: "#1b9e77",
+  },
 };
 
-const renderStatus = (feature) => {
-  const status = feature.properties["signal_status"];
+const renderSignalStatus = (status) => {
   if (!status || !STATUS_STYLES[status]) return "";
   const { label, ...styles } = STATUS_STYLES[status];
   return (
@@ -58,11 +59,38 @@ const renderStatus = (feature) => {
   );
 };
 
-const TABLE_HEADERS = [
-  { key: "location_name", label: "Location" },
-  { key: "signal_type", label: "Type" },
-  { key: "signal_status", label: "Status", renderFunc: renderStatus },
-];
+const renderSignalType = (type) => {
+  switch (type) {
+    case "TRAFFIC":
+      return "Traffic signal";
+    case "PHB":
+      return "Pedestrian signal";
+    default:
+      return "";
+  }
+};
+
+const listItemRenderer = (feature) => {
+  return (
+    <>
+      <p className="fw-bold my-0">
+        <small>{feature.properties.location_name}</small>
+      </p>
+      <div className="d-flex w-100 justify-content-between">
+        <p className="my-0">
+          <small>{renderSignalType(feature.properties.signal_type)}</small>
+        </p>
+        <p className="my-0 text-nowrap">
+          <small>
+            <small>
+              {renderSignalStatus(feature.properties.signal_status)}
+            </small>
+          </small>
+        </p>
+      </div>
+    </>
+  );
+};
 
 const POINT_LAYER_STYLE = {
   id: "points",
@@ -126,9 +154,9 @@ export default function Viewer() {
             <h2 className="text-primary">Signal Requests</h2>
           </Col>
         </Row>
-        <GeoTable
+        <GeoList
           geojson={data}
-          headers={TABLE_HEADERS}
+          listItemRenderer={listItemRenderer}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
           mapOverlayConfig={mapOverlayConfig}

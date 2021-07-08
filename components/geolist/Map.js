@@ -1,11 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Spinner from "react-bootstrap/Spinner";
+import React, { useEffect, useRef, useState } from "react";
 import CloseButton from "react-bootstrap/CloseButton";
-import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import styles from "../../styles/Map.module.css";
 // TODO: move to build environment
@@ -160,7 +157,6 @@ const useMap = (mapContainerRef, mapRef) => {
  **/
 const MapOverlay = ({ selectedFeature, setSelectedFeature, config }) => {
   // TODO: add aria tags?
-  console.log(selectedFeature.properties);
   return (
     <div className="map-overlay-container">
       <div className="list-group">

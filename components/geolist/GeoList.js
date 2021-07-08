@@ -1,19 +1,19 @@
-import React, { useRef, useEffect, useState } from "react";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import React, { useRef } from "react";
 import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
+import Navbar from "react-bootstrap/Navbar";
+import Row from "react-bootstrap/Row";
 import { BsSearch } from "react-icons/bs";
 import { FaCaretDown, FaCaretUp, FaMapMarkerAlt } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
+import List from "./List";
 import Map, { easeToFeature, fitFeatureBounds } from "./Map";
-import Table from "./Table";
-import Navbar from "react-bootstrap/Navbar";
 /*
-  GeoTable is an interactive map-table component that can be configured to display a geojson FeatureCollection
+  GeoList is an interactive map-table component that can be configured to display a geojson FeatureCollection
   of point features. You feed it geojson data and a few configuration objects, and it presents a side-by-side
   table and map with shared states. 
 
@@ -220,29 +220,30 @@ function MapModal({ showMap, setShowMap, children }) {
   );
 }
 
-const useDynamicStyles = (
+const useSelectedFeatureEffect = (
   mapRef,
   layerId,
   selectedFeature,
-  applyDynamicStyle
+  selectedFeatureEffect
 ) => {
   React.useEffect(() => {
     if (
-      !applyDynamicStyle ||
+      !selectedFeatureEffect ||
       !mapRef.current ||
       !mapRef.current.getLayer(layerId)
-    )
+    ) {
       return;
-    applyDynamicStyle(mapRef.current, selectedFeature);
+    }
+    selectedFeatureEffect(mapRef.current, selectedFeature);
   }, [mapRef, selectedFeature]);
 };
 
-export default function GeoTable({
+export default function GeoList({
   geojson,
-  headers,
+  listItemRenderer,
   layerStyle,
   filterDefs,
-  applyDynamicStyle,
+  selectedFeatureEffect,
   mapOverlayConfig,
 }) {
   const [showMap, setShowMap] = React.useState(false);
@@ -254,12 +255,26 @@ export default function GeoTable({
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
 
-  useDynamicStyles(mapRef, layerStyle.id, selectedFeature, applyDynamicStyle);
+  useSelectedFeatureEffect(
+    mapRef,
+    layerStyle.id,
+    selectedFeature,
+    selectedFeatureEffect
+  );
 
   const onFeatureClick = (e) => {
     const clickedFeature = e.features[0];
     setSelectedFeature(clickedFeature);
     // ;
+  };
+
+  /**
+   * repaint the map after a brief delay to allow the DOM to catchup
+   **/
+  const repaintMap = (map) => {
+    setTimeout(() => {
+      map?.resize();
+    }, 400);
   };
 
   const onRowClick = (feature) => {
@@ -275,43 +290,42 @@ export default function GeoTable({
       }
       setSelectedFeature(feature);
       setShowMap(true);
-      setTimeout(() => {
-        mapRef.current.resize();
-      }, 400);
+      repaintMap(mapRef.current);
     } else {
       setSelectedFeature(null);
     }
   };
 
-  const onBreakpointChange = () => {
+  const onBreakpointChange = (isSmallScreen, showMap) => {
     // resize (aka repaint) map when container size changes
-    setTimeout(() => {
-      mapRef.current?.resize();
-    }, 400);
+    // todo: document use of display to prevent map reloading/rendering
+    // We are manually removing bootstraps modal styles, because our modal
+    // is always open
+    if (isSmallScreen && !showMap) {
+      document.body.classList.remove("modal-open");
+      document.body.style.overflow = "auto";
+    } else if (isSmallScreen && showMap) {
+      document.body.classList.add("modal-open");
+      document.body.style.overflow = "hidden";
+    } else {
+      // not-small screen
+      document.body.classList.remove("modal-open");
+      document.body.style.overflow = "auto";
+    }
+    repaintMap(mapRef.current);
   };
 
   // bootstrap `md` and lower
   const isSmallScreen = useMediaQuery(
     { query: "(max-width: 991px)" },
     undefined,
-    onBreakpointChange
+    (matches) => onBreakpointChange(matches, showMap)
   );
-
-  // todo: document use of display to prevent map reloading/rendering
-  // todo: bring setTimeout/showmap into function
-  // bring this into a side effect
-  if (isSmallScreen && !showMap) {
-    document.body.classList.remove("modal-open");
-    document.body.style.overflow = "";
-  } else if (isSmallScreen && showMap) {
-    document.body.classList.add("modal-open");
-    document.body.style.overflow = "hidden";
-  }
 
   return (
     <>
       <Row>
-        <Col xs={12} lg={5}>
+        <Col xs={12} lg={4}>
           <Row style={{ height: 500, overflow: "hidden" }}>
             <Col>
               <Row>
@@ -338,10 +352,10 @@ export default function GeoTable({
               </Row>
               <Row style={{ height: 500, overflow: "auto" }}>
                 <Col className="pb-5">
-                  <Table
+                  <List
                     features={filteredGeosjon?.features}
                     onRowClick={onRowClick}
-                    headers={headers}
+                    listItemRenderer={listItemRenderer}
                   />
                 </Col>
               </Row>
@@ -370,6 +384,7 @@ export default function GeoTable({
           <MapModal showMap={showMap} setShowMap={setShowMap}>
             {!selectedFeature && (
               <Button
+                className="btn-outline-primary bg-white"
                 style={{
                   zIndex: 99999999,
                   position: "absolute",

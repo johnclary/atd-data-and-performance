@@ -1,12 +1,13 @@
 import React from "react";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import { ResponsiveContainer, PieChart, Pie, Cell, Label } from "recharts";
-import Nav from "../components/Nav";
+import InputGroup from "react-bootstrap/InputGroup";
+import Row from "react-bootstrap/Row";
+import { Cell, Label, Pie, PieChart, ResponsiveContainer } from "recharts";
 import Footer from "../components/Footer";
-import GeoTable from "../components/geotable/GeoTable";
+import GeoList from "../components/geolist/GeoList";
+import Nav from "../components/Nav";
 import useSocrata from "../utils/socrata.js";
 
 const formatPercent = (value, places) => {
@@ -25,11 +26,6 @@ const SOCRATA_ENDPOINT_RETIMING = {
   format: "json",
   query: "$limit=9999999&",
 };
-
-const TABLE_HEADERS = [
-  { key: "system_name", label: "Corridor Name" },
-  { key: "retime_status", label: "Status" },
-];
 
 const FILTERS = {
   search: {
@@ -52,16 +48,34 @@ const POINT_LAYER_STYLE = {
   },
 };
 
+const listItemRenderer = (feature) => {
+  return (
+    <>
+      <div className="d-flex w-100 justify-content-between">
+        <p className="fw-bold my-0">
+          <small>{feature.properties.system_name}</small>
+        </p>
+        <p className="my-0">
+          <small>{feature.properties.retime_status}</small>
+        </p>
+      </div>
+    </>
+  );
+};
+
 const mapOverlayConfig = {
   titleKey: "system_name",
   bodyKeys: [
+    { key: "retime_status", label: "Status" },
     { key: "signal_count", label: "# of Signals" },
     { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
     { key: "engineer_note", label: "Note" },
   ],
 };
 
-const applyDynamicStyle = (map, selectedFeature) => {
+// Styling effect which will be called when selectedFeature changes
+const selectedFeatureEffect = (map, selectedFeature) => {
+  // set different circle color for selected feature
   const matchValue = selectedFeature?.properties.system_id || "";
   map.setPaintProperty(POINT_LAYER_ID, "circle-color", [
     "match",
@@ -70,8 +84,18 @@ const applyDynamicStyle = (map, selectedFeature) => {
     "#DC6E2C",
     "#7B76B5",
   ]);
+  // ensure circles in the selected feature draw on top of other features
+  // important because we have overlapping features
+  map.setLayoutProperty(POINT_LAYER_ID, "circle-sort-key", [
+    "match",
+    ["get", "system_id"],
+    matchValue,
+    1,
+    0,
+  ]);
 };
 
+// factory function which creates an empty geojson feature
 const constructCorridorFeature = ({ system_id, system_name }) => {
   return {
     type: "Feature",
@@ -177,6 +201,29 @@ const useFilteredCorridors = (signalCorridors, retimingDataFiltered) => {
   return signalCorridorsFiltered;
 };
 
+const PieLabel = ({ summaryStats }) => {
+  const pctComplete =
+    summaryStats.complete / (summaryStats.incomplete + summaryStats.complete);
+  return (
+    <>
+      <text
+        fontSize="40px"
+        x="50%"
+        y="45%"
+        dominantBaseline="middle"
+        textAnchor="middle"
+      >
+        {formatPercent(pctComplete)}
+      </text>
+      <text x="50%" y="60%" dominantBaseline="middle" textAnchor="middle">
+        {`${summaryStats.complete} of ${
+          summaryStats.incomplete + summaryStats.complete
+        }`}
+      </text>
+    </>
+  );
+};
+
 const useSummaryStats = (retimingDataFiltered, signalCorridorsRaw) => {
   // TODO: simplifiy with reducer
   const [summaryStats, setSummaryStats] = React.useState({
@@ -237,9 +284,6 @@ const ProgressChart = ({ summaryStats }) => {
     setPieData(newPieData);
   }, [summaryStats]);
 
-  const pctComplete =
-    summaryStats.complete / (summaryStats.incomplete + summaryStats.complete);
-
   return (
     <ResponsiveContainer height={200}>
       <PieChart width={"100%"} height={"100%"}>
@@ -259,11 +303,11 @@ const ProgressChart = ({ summaryStats }) => {
           {/* <Label offset={0} position="center">
             {formatPercent(pctComplete, 0)}
           </Label> */}
-          <Label offset={0} position="center">
-            {`${summaryStats.complete} of ${
-              summaryStats.incomplete + summaryStats.complete
-            }`}
-          </Label>
+          <Label
+            content={<PieLabel summaryStats={summaryStats} />}
+            offset={0}
+            position="center"
+          />
         </Pie>
       </PieChart>
     </ResponsiveContainer>
@@ -321,53 +365,65 @@ export default function Viewer() {
       <Nav />
       <Container fluid>
         <Row>
-          <Col>
-            <h2 className="text-primary">Signal Re-Timing</h2>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={3}>
-            <Form.Label>Year</Form.Label>
-            <Form.Select
-              aria-label="Year selector"
-              onChange={(e) => setSelectedYear(e.target.value)}
-              value={selectedYear || ""}
-            >
-              {years.map((year) => {
-                return (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                );
-              })}
-            </Form.Select>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <p>
-              This is some info about the page. The info here is about info for
-              this page. It's already been written somewhere else.
-            </p>
-            <p>
-              This is some info about the page. The info here is about info for
-              this page. It's already been written somewhere else.
+          <Col xs={12} md={4}>
+            <h2 className="text-primary">Signal Timing</h2>
+            <p className="text-primary">
+              This dashboard reports the progress of the Austin Transportation
+              Department's Annual Signal Timing Program. Beginning in 2017,
+              traffic signal engineers will re-time approximately 1/3 of the
+              city’s 1,000+ signals each year, with the goal of ensuring signals
+              are timed for optimum safety and performance.{" "}
+              <a href="https://data.mobility.austin.gov/signal-timing/#about">
+                More info
+              </a>
+              .
             </p>
           </Col>
-          <Col xs={12} md={3}>
-            <ProgressChart summaryStats={summaryStats} />
-          </Col>
-          <Col xs={12} md={3} className="text-center">
-            {totalTravelTimeChange && formatPercent(totalTravelTimeChange, 1)}
+          <Col>
+            <Row>
+              <Col xs={12} md={4} lg={3} xl={2} className="mx-auto">
+                <InputGroup>
+                  <Form.Label className="text-primary my-auto me-2">
+                    Year
+                  </Form.Label>
+                  <Form.Select
+                    aria-label="Year selector"
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    value={selectedYear || ""}
+                  >
+                    {years.map((year) => {
+                      return (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12} md={6} className="text-center">
+                <h5 className="text-primary">Signals Re-Timed</h5>
+                <ProgressChart summaryStats={summaryStats} />
+              </Col>
+              <Col xs={12} md={6} className="text-center">
+                <h5 className="text-primary">Travel Time Reduced</h5>
+                <span style={{ fontSize: "52px" }}>
+                  {totalTravelTimeChange &&
+                    formatPercent(totalTravelTimeChange, 1)}
+                </span>
+              </Col>
+            </Row>
           </Col>
         </Row>
-        <GeoTable
+        <GeoList
           geojson={signalCorridorsFiltered}
-          headers={TABLE_HEADERS}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
-          applyDynamicStyle={applyDynamicStyle}
+          selectedFeatureEffect={selectedFeatureEffect}
           mapOverlayConfig={mapOverlayConfig}
+          listItemRenderer={listItemRenderer}
         />
       </Container>
       <Footer />

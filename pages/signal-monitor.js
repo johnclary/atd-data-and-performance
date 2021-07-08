@@ -1,14 +1,11 @@
-import React, { useRef, useEffect, useState } from "react";
-import Head from "next/head";
+import React from "react";
+import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-// custom components
-import Nav from "../components/Nav";
 import Footer from "../components/Footer";
-import GeoTable from "../components/geotable/GeoTable";
+import GeoList from "../components/geolist/GeoList";
+import Nav from "../components/Nav";
 import useSocrata from "../utils/socrata.js";
 
 const SOCRATA_ENDPOINT = {
@@ -33,18 +30,29 @@ const mapOverlayConfig = {
   ],
 };
 
-const renderOperationState = (feature) => {
-  const val = feature.properties["operation_state"];
-  const thisOpState = OP_STATES.filter((opState) => {
-    if (opState.key === val) return true;
+const renderOperationState = (operationState) => {
+  const thisOpState = OP_STATES.find((opState) => {
+    return opState.key === operationState;
   });
-  return <span className="status-badge">{thisOpState[0]?.label || ""}</span>;
+  return <span className="status-badge">{thisOpState?.label || ""}</span>;
 };
 
-const TABLE_HEADERS = [
-  { key: "location_name", label: "Location" },
-  { key: "operation_state", label: "Status", renderFunc: renderOperationState },
-];
+const listItemRenderer = (feature) => {
+  return (
+    <>
+      <p className="fw-bold my-0">
+        <small>{feature.properties.location_name}</small>
+      </p>
+      <p className="my-0">
+        <small>
+          <small>
+            {renderOperationState(feature.properties.operation_state)}
+          </small>
+        </small>
+      </p>
+    </>
+  );
+};
 
 const POINT_LAYER_STYLE = {
   id: "points",
@@ -147,9 +155,9 @@ export default function Viewer() {
             );
           })}
         </Row>
-        <GeoTable
+        <GeoList
           geojson={data}
-          headers={TABLE_HEADERS}
+          listItemRenderer={listItemRenderer}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
           mapOverlayConfig={mapOverlayConfig}

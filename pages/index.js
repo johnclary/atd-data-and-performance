@@ -96,7 +96,7 @@ export function CardItem({ href, title, description, img }) {
   return (
     <Link className="text-primary text-decoration-none" href={href}>
       <div style={{ cursor: "pointer" }}>
-        <Card className="h-100 shadow-sm">
+        <Card style={{ borderRadius: 15 }} className="h-100 shadow-sm">
           <Card.Body>
             {img && (
               <Row className="pb-2">
