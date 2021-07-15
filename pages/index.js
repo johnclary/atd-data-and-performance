@@ -8,7 +8,7 @@ import Image from "react-bootstrap/Image";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import Link from "next/link";
-import { FaMapMarkerAlt, FaRegChartBar } from "react-icons/fa";
+import { FaRegChartBar } from "react-icons/fa";
 
 const cards = {
   signal_operations: [
@@ -95,11 +95,11 @@ const cards = {
 export function CardItem({ href, title, description, img }) {
   return (
     <Link className="text-primary text-decoration-none" href={href}>
-      <div style={{ cursor: "pointer" }}>
+      <div style={{ cursor: "pointer", height: "100%" }}>
         <Card style={{ borderRadius: 15 }} className="h-100 shadow-sm">
           <Card.Body>
             {img && (
-              <Row className="pb-2">
+              <Row key="image-row" className="pb-2">
                 <Col>
                   <Card.Img variant="top" src={img.src} alt={img.alt} />
                 </Col>
@@ -109,11 +109,6 @@ export function CardItem({ href, title, description, img }) {
             <Row>
               <Col className="text-muted">{description}</Col>
             </Row>
-            <div className="bg-white d-flex justify-content-end">
-              <div className="content-badge text-center">
-                <FaRegChartBar /> Dashboard
-              </div>
-            </div>
           </Card.Body>
         </Card>
       </div>
@@ -125,8 +120,8 @@ export default function Home() {
   return (
     <>
       <Container>
-        <Row>
-          <Col md={3}></Col>
+        <Row key="title-row">
+          <Col key="spacer-1" md={3}></Col>
           <Col sm={12} md={9} lg={6} className="py-5 px-4 text-primary">
             <Image
               fluid
@@ -140,12 +135,12 @@ export default function Home() {
             </p>
           </Col>
         </Row>
-        <Row className="text-dts-4">
+        <Row key="row-1" className="text-dts-4">
           <Col>
             <h3>Signal Operations</h3>
           </Col>
         </Row>
-        <Row className="text-dts-4 mb-4">
+        <Row key="row-2" className="text-dts-4 mb-4">
           {cards.signal_operations.map((card) => {
             return (
               <Col key={card.href} xs={6} md={3}>
@@ -154,12 +149,12 @@ export default function Home() {
             );
           })}
         </Row>
-        <Row className="text-dts-4">
+        <Row key="row-3" className="text-dts-4">
           <Col>
             <h3>Maps & Resources</h3>
           </Col>
         </Row>
-        <Row className="text-dts-4 mb-4">
+        <Row key="row-4" className="text-dts-4 mb-4">
           {cards.maps_resources.map((card) => {
             return (
               <Col key={card.key} xs={6} md={3}>
@@ -168,12 +163,12 @@ export default function Home() {
             );
           })}
         </Row>
-        <Row className="text-dts-4">
+        <Row key="row-5" className="text-dts-4">
           <Col>
             <h3>Open Data & Code</h3>
           </Col>
         </Row>
-        <Row className="text-dts-4 mb-4">
+        <Row key="row-6" className="text-dts-4 mb-4">
           {cards.open_data.map((card) => {
             return (
               <Col key={card.key} xs={6} md={3}>
