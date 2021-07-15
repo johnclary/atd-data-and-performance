@@ -241,6 +241,34 @@ const useSelectedFeatureEffect = (
   }, [mapRef, selectedFeature, layerId, selectedFeatureEffect]);
 };
 
+/**
+ * Hide overflow when map modal is showing on mobile, otherwise auto
+ **/
+const useConditionalOverflow = (isSmallScreen, showMap) => {
+  React.useEffect(() => {
+    if (isSmallScreen && !showMap) {
+      document.body.classList.remove("modal-open");
+      document.body.style.overflow = "auto";
+    } else if (isSmallScreen && showMap) {
+      document.body.classList.add("modal-open");
+      document.body.style.overflow = "hidden";
+    } else {
+      // not-small screen
+      document.body.classList.remove("modal-open");
+      document.body.style.overflow = "auto";
+    }
+  }, [isSmallScreen, showMap]);
+};
+
+/**
+ * repaint the map after a brief delay to allow the DOM to catchup
+ **/
+const repaintMap = (map) => {
+  setTimeout(() => {
+    map?.resize();
+  }, 100);
+};
+
 export default function GeoList({
   geojson,
   listItemRenderer,
@@ -271,15 +299,6 @@ export default function GeoList({
     // ;
   };
 
-  /**
-   * repaint the map after a brief delay to allow the DOM to catchup
-   **/
-  const repaintMap = (map) => {
-    setTimeout(() => {
-      map?.resize();
-    }, 100);
-  };
-
   const onRowClick = (feature) => {
     if (feature) {
       if (feature.geometry.type === "Point") {
@@ -299,31 +318,14 @@ export default function GeoList({
     repaintMap(mapRef.current);
   };
 
-  const onBreakpointChange = (matches, showMap) => {
-    // resize (aka repaint) map when container size changes
-    // todo: document use of display to prevent map reloading/rendering
-    // We are manually removing bootstraps modal styles, because our modal
-    // is always open
-    if (matches && !showMap) {
-      document.body.classList.remove("modal-open");
-      document.body.style.overflow = "auto";
-    } else if (matches && showMap) {
-      document.body.classList.add("modal-open");
-      document.body.style.overflow = "hidden";
-    } else {
-      // not-small screen
-      document.body.classList.remove("modal-open");
-      document.body.style.overflow = "auto";
-    }
-    repaintMap(mapRef.current);
-  };
-
   // bootstrap `md` and lower
   const isSmallScreen = useMediaQuery(
     { query: "(max-width: 991px)" },
     undefined,
-    (matches) => onBreakpointChange(matches, showMap)
+    () => repaintMap(mapRef.current)
   );
+
+  useConditionalOverflow(isSmallScreen, showMap);
 
   return (
     <>
