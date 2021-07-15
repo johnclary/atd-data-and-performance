@@ -204,7 +204,7 @@ export default function Map({
   const isMapLoaded = useMap(mapContainerRef, mapRef);
 
   useEffect(() => {
-    console.log("TODO: THIS IS OVER-RENDERING!")
+    // console.log("TODO: THIS IS OVER-RENDERING!")
     isMapLoaded &&
       geojson &&
       addPointLayer({
