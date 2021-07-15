@@ -148,7 +148,7 @@ const useMap = (mapContainerRef, mapRef) => {
     mapRef.current.addControl(new mapboxgl.NavigationControl(), "bottom-right");
     mapRef.current.once("load").then(() => setIsMapLoaded(true));
     return () => mapRef.current?.remove();
-  }, []);
+  }, [mapContainerRef, mapRef]);
   return isMapLoaded;
 };
 
@@ -204,6 +204,7 @@ export default function Map({
   const isMapLoaded = useMap(mapContainerRef, mapRef);
 
   useEffect(() => {
+    console.log("TODO: THIS IS OVER-RENDERING!")
     isMapLoaded &&
       geojson &&
       addPointLayer({
@@ -212,7 +213,7 @@ export default function Map({
         geojson: geojson,
         onFeatureClick: onFeatureClick,
       });
-  }, [mapRef.current, geojson, isMapLoaded, layerStyle]);
+  }, [geojson, isMapLoaded, layerStyle, mapRef, onFeatureClick]);
 
   return (
     <div className={styles["map-container"]} ref={mapContainerRef}>

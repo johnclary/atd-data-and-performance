@@ -103,7 +103,6 @@ const useMultiPointCorridors = (features) => {
   React.useEffect(() => {
     if (!features || features.length === 0) return;
     let corridorIndex = {};
-    let mutableCorridors = { ...signalCorridors };
     features.forEach((feature) => {
       let system_id = feature.properties.system_id;
       let system_name = feature.properties.system_name;
@@ -119,10 +118,13 @@ const useMultiPointCorridors = (features) => {
       coordinates &&
         corridorIndex[system_id].geometry.coordinates.push(coordinates);
     });
-    mutableCorridors.features = Object.keys(corridorIndex).map(
+    let newFeatures = Object.keys(corridorIndex).map(
       (key) => corridorIndex[key]
     );
-    setSignalCorridors(mutableCorridors);
+    setSignalCorridors({
+      type: "FeatureCollection",
+      features: newFeatures,
+    });
   }, [features]);
   return signalCorridors;
 };
@@ -259,7 +261,7 @@ const useSummaryStats = (retimingDataFiltered, signalCorridorsRaw) => {
       }
     });
     setSummaryStats(newSummaryStats);
-  }, [retimingDataFiltered]);
+  }, [retimingDataFiltered, signalCorridorsRaw]);
   return summaryStats;
 };
 
@@ -376,7 +378,7 @@ export default function Viewer() {
             <h2 className="text-primary">Signal Timing</h2>
             <p className="text-primary">
               This dashboard reports the progress of the Austin Transportation
-              Department's Annual Signal Timing Program. Beginning in 2017,
+              Department&aposs Annual Signal Timing Program. Beginning in 2017,
               traffic signal engineers will re-time approximately 1/3 of the
               city’s 1,000+ signals each year, with the goal of ensuring signals
               are timed for optimum safety and performance.{" "}

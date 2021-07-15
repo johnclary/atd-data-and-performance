@@ -24,7 +24,7 @@ function IconSeparator(props) {
           <hr className="w-100" />
         </Col>
         <Col xs="auto" className="px-xs-0 mx-xs-0">
-          <img
+          <Image
             className="float-right"
             height={17}
             src="/assets/icos.jpg"
@@ -47,7 +47,7 @@ export default function NavComponent(props) {
       <Navbar expand="md" className="py-1">
         <Container fluid key="nav-container">
           <div className="d-flex flex-nowrap">
-            <Link href="/">
+            <Link href="/" passHref>
               <Navbar.Brand style={{cursor: "pointer"}} className="pl-0 me-auto">
                 <Image
                   width={300}

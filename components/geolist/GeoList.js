@@ -238,7 +238,7 @@ const useSelectedFeatureEffect = (
       return;
     }
     selectedFeatureEffect(mapRef.current, selectedFeature);
-  }, [mapRef, selectedFeature]);
+  }, [mapRef, selectedFeature, layerId, selectedFeatureEffect]);
 };
 
 export default function GeoList({
@@ -333,7 +333,11 @@ export default function GeoList({
             <Col>
               <Row>
                 <Col>
-                  <TableSearch setSelectedFeature={setSelectedFeature} filters={filters} setFilters={setFilters} />
+                  <TableSearch
+                    setSelectedFeature={setSelectedFeature}
+                    filters={filters}
+                    setFilters={setFilters}
+                  />
                 </Col>
                 {isSmallScreen && (
                   <Col xs="auto">

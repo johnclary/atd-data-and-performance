@@ -94,7 +94,7 @@ const cards = {
 
 export function CardItem({ href, title, description, img }) {
   return (
-    <Link className="text-primary text-decoration-none" href={href}>
+    <Link className="text-primary text-decoration-none" href={href} passHref>
       <div style={{ cursor: "pointer", height: "100%" }}>
         <Card style={{ borderRadius: 15 }} className="h-100 shadow-sm">
           <Card.Body>
@@ -131,7 +131,7 @@ export default function Home() {
             <p className="text-muted mt-3">
               This page has useful info, such as dashboards, maps, and misc
               other links to content that you may or may not find interesting.
-              Also, we have a data catalog that you can browse. That'd be cool.
+              Also, we have a data catalog that you can browse. That&aposd be cool.
             </p>
           </Col>
         </Row>
