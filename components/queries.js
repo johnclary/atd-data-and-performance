@@ -67,3 +67,22 @@ export const SIGNAL_STATUS_QUERY = {
     },
   ],
 };
+
+export const SIGNAL_REQUESTS_QUERY = {
+  resourceId: "p53x-x73x",
+  format: "geojson",
+  params: [
+    {
+      key: "limit",
+      value: "99999999",
+    },
+    {
+      key: "order",
+      value: "location_name asc",
+    },
+    {
+      key: "select",
+      value: "location_name,signal_id,signal_type,signal_status,location",
+    },
+  ],
+};

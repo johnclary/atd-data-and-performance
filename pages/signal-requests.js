@@ -6,13 +6,7 @@ import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
 import useSocrata from "../utils/socrata.js";
-
-const SOCRATA_ENDPOINT = {
-  resourceId: "p53x-x73x",
-  format: "geojson",
-  query:
-    "$limit=9999999&$order=location_name asc&$select=location_name,signal_id,signal_type,signal_status,location",
-};
+import { SIGNAL_REQUESTS_QUERY } from "../components/queries";
 
 const mapOverlayConfig = {
   titleKey: "location_name",
@@ -140,7 +134,7 @@ const FILTERS = {
 };
 
 export default function Viewer() {
-  const { data, loading, error } = useSocrata({ ...SOCRATA_ENDPOINT });
+  const { data, loading, error } = useSocrata(SIGNAL_REQUESTS_QUERY);
 
   return (
     <>
