@@ -7,18 +7,33 @@ import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
 import useSocrata from "../utils/socrata.js";
+import { SIGNAL_STATUS_QUERY } from "../components/queries";
 
-const SOCRATA_ENDPOINT = {
-  resourceId: "5zpr-dehc",
-  format: "geojson",
-  query:
-    "$limit=9999999&$order=location_name asc&$where=operation_state in ('1','2','3')",
-};
-
-const OP_STATES = [
-  { key: "2", label: "Unscheduled Flash", color: "red" },
-  { key: "1", label: "Scheduled Flash", color: "blue" },
-  { key: "3", label: "Comm Outage", color: "green" },
+const OPERATION_STATES = [
+  {
+    key: "scheduled_flash",
+    value: "1",
+    label: "Scheduled Flash",
+    color: "#d95f02",
+    featureProp: "operation_state",
+    checked: true,
+  },
+  {
+    key: "unscheduled_flash",
+    value: "2",
+    label: "Unscheduled Flash",
+    color: "#7570b3",
+    featureProp: "operation_state",
+    checked: true,
+  },
+  {
+    key: "comm_outage",
+    value: "3",
+    label: "Comm Outage",
+    color: "#1b9e77",
+    featureProp: "operation_state",
+    checked: true,
+  },
 ];
 
 const mapOverlayConfig = {
@@ -30,20 +45,27 @@ const mapOverlayConfig = {
   ],
 };
 
-const renderOperationState = (operationState) => {
-  const thisOpState = OP_STATES.find((opState) => {
-    return opState.key === operationState;
+const renderOperationState = (inputOpState) => {
+  const opState = OPERATION_STATES.find((opState) => {
+    return opState.value === inputOpState;
   });
-  return <span className="status-badge">{thisOpState?.label || ""}</span>;
+  return (
+    <span
+      style={{ borderColor: opState.color, color: opState.color }}
+      className="status-badge"
+    >
+      {opState?.label || ""}
+    </span>
+  );
 };
 
 const listItemRenderer = (feature) => {
   return (
     <>
-      <p className="fw-bold my-0">
+      <p key="title" className="fw-bold my-0">
         <small>{feature.properties.location_name}</small>
       </p>
-      <p className="my-0">
+      <p key="body" className="my-0">
         <small>
           <small>
             {renderOperationState(feature.properties.operation_state)}
@@ -61,40 +83,18 @@ const POINT_LAYER_STYLE = {
       "match",
       ["get", "operation_state"],
       "1",
-      "#7570b3",
+      OPERATION_STATES[0].color,
       "2",
-      "#d95f02",
+      OPERATION_STATES[1].color,
       "3",
-      "#1b9e77",
+      OPERATION_STATES[2].color,
       /* other */ "#ccc",
     ],
   },
 };
 
 const FILTERS = {
-  checkbox: [
-    {
-      key: "scheduled_flash",
-      value: "1",
-      featureProp: "operation_state",
-      label: "Scheduled Flash",
-      checked: true,
-    },
-    {
-      key: "flash",
-      value: "2",
-      featureProp: "operation_state",
-      label: "Unscheduled Flash",
-      checked: true,
-    },
-    {
-      key: "comm_outage",
-      value: "3",
-      featureProp: "operation_state",
-      label: "Communications Outage",
-      checked: true,
-    },
-  ],
+  checkbox: OPERATION_STATES,
   search: {
     key: "search",
     value: "",
@@ -132,24 +132,24 @@ const useMetricData = (data) => {
 };
 
 export default function Viewer() {
-  const { data, loading, error } = useSocrata(SOCRATA_ENDPOINT);
+  const { data, loading, error } = useSocrata(SIGNAL_STATUS_QUERY);
   const metricData = useMetricData(data);
   return (
     <>
       <Nav />
       <Container fluid>
-        <Row>
+        <Row key="title">
           <Col>
             <h2 className="text-primary">Traffic Signal Monitor</h2>
           </Col>
         </Row>
-        <Row>
-          {OP_STATES.map((operationStateDef) => {
+        <Row key="metrics">
+          {OPERATION_STATES.map((opState) => {
             return (
-              <Col className="pb-2">
+              <Col key={opState.key} className="pb-2">
                 <CardItem
-                  title={operationStateDef.label}
-                  value={metricData[operationStateDef.key] || 0}
+                  title={opState.label}
+                  value={metricData[opState.key] || 0}
                 />
               </Col>
             );
@@ -162,13 +162,13 @@ export default function Viewer() {
           layerStyle={POINT_LAYER_STYLE}
           mapOverlayConfig={mapOverlayConfig}
         />
-        <Row className="mt-4 mb-2 text-primary">
+        <Row key="about-title" className="mt-4 mb-2 text-primary">
           <Col>
             <h4>About the Traffic Signal Monitor</h4>
           </Col>
         </Row>
-        <Row className="text-primary">
-          <Col>
+        <Row key="about-content" className="text-primary">
+          <Col key="col-1">
             <h5 className="text-dts-4">What am I Looking at?</h5>
             <p>
               This dashboard reports the operation status of traffic signals in
@@ -179,7 +179,7 @@ export default function Viewer() {
               mode for maintenance purposes or be scheduled to flash overnight.
             </p>
           </Col>
-          <Col>
+          <Col key="col-2">
             <h5 className="text-dts-4">Advanced Transportation Management</h5>
             <p>
               All of the City’s signals communicate with our Advanced
@@ -190,7 +190,7 @@ export default function Viewer() {
               signal outage will not be reported here.
             </p>
           </Col>
-          <Col>
+          <Col key="col-3">
             <h5 className="text-dts-4">Report an Issue</h5>
             <p>
               To report an issue or request a new traffic signal, call 3-1-1.

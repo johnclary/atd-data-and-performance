@@ -26,7 +26,6 @@ const mapOverlayConfig = {
 const STATUS_STYLES = {
   DESIGN: {
     label: "Design",
-    color: "#fff",
     borderColor: "#7570b3",
     color: "#7570b3",
   },
@@ -37,13 +36,11 @@ const STATUS_STYLES = {
   },
   TURNED_ON: {
     label: "Turned On",
-    color: "#fff",
     borderColor: "#1b9e77",
     color: "#1b9e77",
   },
   "READY FOR CONSTRUCTION": {
     label: "Ready for Construction",
-    color: "#fff",
     borderColor: "#1b9e77",
     color: "#1b9e77",
   },
@@ -167,7 +164,7 @@ export default function Viewer() {
           </Col>
         </Row>
         <Row className="text-primary">
-          <Col>
+          <Col xs={12} lg={4}>
             <h5 className="text-dts-4">What am I Looking at?</h5>
             <p>
               This webpage reports the status of traffic and pedestrian signal
@@ -182,7 +179,7 @@ export default function Viewer() {
             </p>
             <p>Click here for more details about the signal request process.</p>
           </Col>
-          <Col>
+          <Col xs={12} lg={4}>
             <h5 className="text-dts-4">Evaluation and Study</h5>
             <p>
               Eligible request are assigned preliminary scores based on crash
@@ -191,7 +188,7 @@ export default function Viewer() {
               makes a formal recommendation for signalization.
             </p>
           </Col>
-          <Col>
+          <Col xs={12} lg={4}>
             <h5 className="text-dts-4">Contact Us</h5>
             <p>
               To request a new traffic signal or follow-up on an existing

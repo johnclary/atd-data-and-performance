@@ -9,22 +9,13 @@ import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
 import useSocrata from "../utils/socrata.js";
+import {
+  SIGNAL_RETIMING_QUERY,
+  SIGNAL_CORRIDORS_QUERY,
+} from "../components/queries";
 
-const formatPercent = (value, places) => {
+const formatPercent = (value, places = 0) => {
   return `${parseFloat(value * 100).toFixed(places)}%`;
-};
-
-const SOCRATA_ENDPOINT_CORRIDORS = {
-  resourceId: "efct-8fs9",
-  format: "geojson",
-  query:
-    "$limit=9999999&$select=system_id,system_name,signal_id,location_name,location",
-};
-
-const SOCRATA_ENDPOINT_RETIMING = {
-  resourceId: "g8w2-8uap",
-  format: "json",
-  query: "$limit=9999999&",
 };
 
 const FILTERS = {
@@ -141,7 +132,7 @@ const useYears = (data) => {
   const [selectedYear, setSelectedYear] = React.useState(null);
 
   React.useEffect(() => {
-    if (!data) return;
+    if (!data || data.length === 0) return;
     let allYears = data.map((row) => {
       return row.scheduled_fy;
     });
@@ -232,11 +223,17 @@ const useSummaryStats = (retimingDataFiltered, signalCorridorsRaw) => {
   });
 
   React.useEffect(() => {
+    if (
+      !retimingDataFiltered ||
+      retimingDataFiltered.length === 0 ||
+      !signalCorridorsRaw ||
+      signalCorridorsRaw.length === 0
+    )
+      return;
     let corridorStatusIndex = {};
     retimingDataFiltered.forEach((corridor) => {
       corridorStatusIndex[corridor.system_id] = corridor.retime_status;
     });
-
     let signalStatusIndex = {};
 
     signalCorridorsRaw.forEach((signal) => {
@@ -324,20 +321,19 @@ const retimingStatsReducer = (accumulator, currentValue) => {
 };
 
 export default function Viewer() {
-  const signalCorridorsRaw = useSocrata(SOCRATA_ENDPOINT_CORRIDORS);
+  const signalCorridorsRaw = useSocrata(SIGNAL_CORRIDORS_QUERY);
+  const retimingDataRaw = useSocrata(SIGNAL_RETIMING_QUERY);
 
   const signalCorridors = useMultiPointCorridors(
-    signalCorridorsRaw?.data?.features || []
+    signalCorridorsRaw.data?.features
   );
-
-  const retimingDataRaw = useSocrata(SOCRATA_ENDPOINT_RETIMING);
 
   const { years, selectedYear, setSelectedYear } = useYears(
     retimingDataRaw.data
   );
 
   const retimingDataFiltered = useFilteredRetimingData(
-    retimingDataRaw?.data || [],
+    retimingDataRaw.data,
     selectedYear
   );
 
@@ -348,7 +344,7 @@ export default function Viewer() {
 
   const summaryStats = useSummaryStats(
     retimingDataFiltered,
-    signalCorridorsRaw?.data?.features || []
+    signalCorridorsRaw.data?.features
   );
 
   let totalTravelTimeChange;
@@ -360,6 +356,17 @@ export default function Viewer() {
     });
     totalTravelTimeChange = totals.vol_wavg_tt_seconds / totals.total_vol;
   }
+  if (signalCorridorsRaw.error || retimingDataRaw.error)
+    return (
+      <>
+        <Nav />
+        <Container fluid>
+          <h1>something went wrong :(</h1>
+        </Container>
+        <Footer />
+      </>
+    );
+
   return (
     <>
       <Nav />

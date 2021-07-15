@@ -29,12 +29,12 @@ const cards = {
       key: "signal_monitor",
     },
     {
-      title: "Device Status",
+      title: "Traffic Cameras",
       description:
         "Info about signal requests where you can search and browse info.",
-      href: "/device-status",
+      href: "/traffic-cameras",
       img: null,
-      key: "device_status",
+      key: "traffic_cameras",
     },
     {
       title: "Signal Timing",

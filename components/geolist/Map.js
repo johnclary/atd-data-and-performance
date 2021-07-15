@@ -117,7 +117,7 @@ const getMultiPointBounds = (feature) => {
 /**
  * Pan and zoom to a map feature. Only supports Point geometries.
  **/
-export const easeToFeature = (map, feature) => {
+export const easeToPointFeature = (map, feature) => {
   const coordinates = feature.geometry.coordinates;
   map.easeTo({
     center: coordinates,

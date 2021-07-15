@@ -11,7 +11,7 @@ import { BsSearch } from "react-icons/bs";
 import { FaCaretDown, FaCaretUp, FaMapMarkerAlt } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import List from "./List";
-import Map, { easeToFeature, fitFeatureBounds } from "./Map";
+import Map, { easeToPointFeature, fitFeatureBounds } from "./Map";
 /*
   GeoList is an interactive map-table component that can be configured to display a geojson FeatureCollection
   of point features. You feed it geojson data and a few configuration objects, and it presents a side-by-side
@@ -102,8 +102,11 @@ const FilterButton = (props) => {
   );
 };
 
-const TableSearch = ({ filters, setFilters }) => {
+const TableSearch = ({ filters, setFilters, setSelectedFeature }) => {
   const handleChange = (e) => {
+    // remove the selected feature when typing in search box
+    // ensures map marker is removed as features are filtered
+    setSelectedFeature(null);
     let currentFilters = { ...filters };
     currentFilters.search.value = e.target.value;
     setFilters(currentFilters);
@@ -274,13 +277,13 @@ export default function GeoList({
   const repaintMap = (map) => {
     setTimeout(() => {
       map?.resize();
-    }, 400);
+    }, 100);
   };
 
   const onRowClick = (feature) => {
     if (feature) {
       if (feature.geometry.type === "Point") {
-        easeToFeature(mapRef.current, feature);
+        easeToPointFeature(mapRef.current, feature);
       } else if (feature.geometry.type === "MultiPoint") {
         fitFeatureBounds(mapRef.current, feature);
       } else {
@@ -288,23 +291,23 @@ export default function GeoList({
           `Cannot zoom to unspported geometry type: ${feature.geomtery.type}`
         );
       }
-      setSelectedFeature(feature);
-      setShowMap(true);
-      repaintMap(mapRef.current);
     } else {
       setSelectedFeature(null);
     }
+    setSelectedFeature(feature);
+    setShowMap(true);
+    repaintMap(mapRef.current);
   };
 
-  const onBreakpointChange = (isSmallScreen, showMap) => {
+  const onBreakpointChange = (matches, showMap) => {
     // resize (aka repaint) map when container size changes
     // todo: document use of display to prevent map reloading/rendering
     // We are manually removing bootstraps modal styles, because our modal
     // is always open
-    if (isSmallScreen && !showMap) {
+    if (matches && !showMap) {
       document.body.classList.remove("modal-open");
       document.body.style.overflow = "auto";
-    } else if (isSmallScreen && showMap) {
+    } else if (matches && showMap) {
       document.body.classList.add("modal-open");
       document.body.style.overflow = "hidden";
     } else {
@@ -330,13 +333,12 @@ export default function GeoList({
             <Col>
               <Row>
                 <Col>
-                  <TableSearch filters={filters} setFilters={setFilters} />
+                  <TableSearch setSelectedFeature={setSelectedFeature} filters={filters} setFilters={setFilters} />
                 </Col>
                 {isSmallScreen && (
                   <Col xs="auto">
                     <Button
                       variant="outline-dts-4"
-                      // className="text-white"
                       size="sm"
                       onClick={() => {
                         setShowMap(!showMap);
