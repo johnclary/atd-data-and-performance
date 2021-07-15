@@ -45,16 +45,6 @@ const POINT_LAYER_OPTIONS_DEFAULT = {
  * Add a custom geojson point layer to a map and enable basic interactivity
  **/
 export const addPointLayer = ({ map, layer, geojson, onFeatureClick }) => {
-  // TODO: why not use setData() instead of adding/removing? https://docs.mapbox.com/mapbox-gl-js/api/sources/#geojsonsource#setdata
-  // remove the layer if it already exists
-  if (map.getLayer(layer.id)) {
-    map.removeLayer(layer.id);
-  }
-
-  // remove the source if it already exists
-  if (map.getSource(layer.id)) {
-    map.removeSource(layer.id);
-  }
   /* merge paint properties separately to allow individual default paint properties
   to be overwritten */
   layer.paint = {
@@ -202,11 +192,14 @@ export default function Map({
   mapOverlayConfig,
 }) {
   const isMapLoaded = useMap(mapContainerRef, mapRef);
-
+  
+  /**
+   * Add the geojson layer to the map (only once!)
+   */
   useEffect(() => {
-    // console.log("TODO: THIS IS OVER-RENDERING!")
     isMapLoaded &&
       geojson &&
+      !mapRef?.current?.getLayer(layerStyle.id) &&
       addPointLayer({
         map: mapRef.current,
         layer: layerStyle,
@@ -214,6 +207,16 @@ export default function Map({
         onFeatureClick: onFeatureClick,
       });
   }, [geojson, isMapLoaded, layerStyle, mapRef, onFeatureClick]);
+
+  /**
+   * Update source data when geojson changes (i.e., is filtered)
+   */
+  useEffect(() => {
+    const source = mapRef?.current?.getSource(layerStyle.id);
+    if (mapRef?.current && source) {
+      source.setData(geojson);
+    }
+  }, [geojson, mapRef, layerStyle]);
 
   return (
     <div className={styles["map-container"]} ref={mapContainerRef}>
