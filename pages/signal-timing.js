@@ -24,7 +24,7 @@ const FILTERS = {
     value: "",
     featureProp: "system_name",
     label: "Search",
-    placeholder: "Search by location...",
+    placeholder: "Search by corridor...",
   },
 };
 

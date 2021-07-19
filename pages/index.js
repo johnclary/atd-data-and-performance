@@ -5,43 +5,52 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
-import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import Link from "next/link";
-import { FaRegChartBar } from "react-icons/fa";
+import {
+  FaClock,
+  FaExclamationTriangle,
+  FaRegClock,
+  FaVideo,
+  FaWrench,
+} from "react-icons/fa";
 
 const cards = {
   signal_operations: [
     {
-      title: "Signal Requests",
+      title: "Signal Projects",
       description:
-        "Info about signal requests where you can search and browse info.",
+        "Get the latest info about active and upcoming traffic signal construction",
       href: "/signal-requests",
       img: { src: "/assets/data_and_performance.jpg", alt: "DTS logo" },
       key: "signal_requests",
+      icon: <FaWrench />,
     },
     {
       title: "Signal Monitor",
       description:
-        "Info about signal requests where you can search and browse info.",
+        "Real-time monitoring of the City's traffic signals",
       href: "/signal-monitor",
       img: null,
       key: "signal_monitor",
+      icon: <FaExclamationTriangle />,
     },
     {
       title: "Traffic Cameras",
       description:
-        "Info about signal requests where you can search and browse info.",
+        "View live images from the City's traffic cameras",
       href: "/traffic-cameras",
       img: null,
       key: "traffic_cameras",
+      icon: <FaVideo />,
     },
     {
       title: "Signal Timing",
       description:
-        "Info about signal requests where you can search and browse info.",
+        "Track the progress of our annual signal re-timing work",
       href: "/signal-timing",
       img: null,
+      icon: <FaClock />,
     },
   ],
   maps_resources: [
@@ -92,27 +101,24 @@ const cards = {
   ],
 };
 
-export function CardItem({ href, title, description, img }) {
+export function CardItem({ href, title, description, icon }) {
   return (
-    <Link className="text-primary text-decoration-none" href={href} passHref>
-      <div style={{ cursor: "pointer", height: "100%" }}>
-        <Card style={{ borderRadius: 15 }} className="h-100 shadow-sm">
-          <Card.Body>
-            {img && (
-              <Row key="image-row" className="pb-2">
-                <Col>
-                  <Card.Img variant="top" src={img.src} alt={img.alt} />
-                </Col>
+    <Col key={href} xs={12} md={4} lg={3} className="pb-3">
+      <Link className="text-primary text-decoration-none" href={href} passHref>
+        <div style={{ cursor: "pointer", height: "100%" }}>
+          <Card style={{ borderRadius: 15 }} className="h-100 shadow-sm">
+            <Card.Body>
+              <Card.Title className="text-primary">
+                {icon} {title}
+              </Card.Title>
+              <Row>
+                <Col className="text-muted">{description}</Col>
               </Row>
-            )}
-            <Card.Title className="text-primary">{title}</Card.Title>
-            <Row>
-              <Col className="text-muted">{description}</Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      </div>
-    </Link>
+            </Card.Body>
+          </Card>
+        </div>
+      </Link>
+    </Col>
   );
 }
 
@@ -131,22 +137,19 @@ export default function Home() {
             <p className="text-muted mt-3">
               This page has useful info, such as dashboards, maps, and misc
               other links to content that you may or may not find interesting.
-              Also, we have a data catalog that you can browse. That&aposd be cool.
+              Also, we have a data catalog that you can browse. That&aposd be
+              cool.
             </p>
           </Col>
         </Row>
         <Row key="row-1" className="text-dts-4">
           <Col>
-            <h3>Signal Operations</h3>
+            <h3>Traffic Signal Operations</h3>
           </Col>
         </Row>
         <Row key="row-2" className="text-dts-4 mb-4">
           {cards.signal_operations.map((card) => {
-            return (
-              <Col key={card.href} xs={6} md={3}>
-                <CardItem {...card} />
-              </Col>
-            );
+            return <CardItem key={card.href} {...card} />;
           })}
         </Row>
         <Row key="row-3" className="text-dts-4">
@@ -156,11 +159,7 @@ export default function Home() {
         </Row>
         <Row key="row-4" className="text-dts-4 mb-4">
           {cards.maps_resources.map((card) => {
-            return (
-              <Col key={card.key} xs={6} md={3}>
-                <CardItem {...card} />
-              </Col>
-            );
+            return <CardItem key={card.href}  {...card} />;
           })}
         </Row>
         <Row key="row-5" className="text-dts-4">
@@ -170,11 +169,7 @@ export default function Home() {
         </Row>
         <Row key="row-6" className="text-dts-4 mb-4">
           {cards.open_data.map((card) => {
-            return (
-              <Col key={card.key} xs={6} md={3}>
-                <CardItem {...card} />
-              </Col>
-            );
+            return <CardItem key={card.href}  {...card} />;
           })}
         </Row>
       </Container>

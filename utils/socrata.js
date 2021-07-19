@@ -15,11 +15,11 @@ const fetcher = async (url) => {
   return res.json();
 };
 
-const buildQuery = (params) => {
-  if (!params || params.length === 0) return null;
-  return params
-    .map((param) => {
-      return `$${param.key}=${param.value}`;
+const buildQuery = (args) => {
+  if (!args || args.length === 0) return null;
+  return args
+    .map((arg) => {
+      return `$${arg.key}=${arg.value}`;
     })
     .join("&");
 };
@@ -30,8 +30,8 @@ const buildUrl = ({ resourceId, format, query }) => {
   return url;
 };
 
-export default function useSocrata({ resourceId, format, params }) {
-  const query = buildQuery(params);
+export default function useSocrata({ resourceId, format, args }) {
+  const query = buildQuery(args);
   const url = buildUrl({ resourceId, format, query });
   // by passing an array of args as the useSWR key, SWR will detect changes to the inputs and re-fetch as needed
   const { data, error } = useSWR(url, fetcher);

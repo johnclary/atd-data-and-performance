@@ -149,7 +149,7 @@ export default function Viewer() {
               <Col key={opState.key} className="pb-2">
                 <CardItem
                   title={opState.label}
-                  value={metricData[opState.key] || 0}
+                  value={metricData[opState.value] || 0}
                 />
               </Col>
             );

@@ -1,7 +1,7 @@
 export const TRAFFIC_CAMERAS_QUERY = {
   resourceId: "b4k4-adkb",
   format: "geojson",
-  params: [
+  args: [
     { key: "limit", value: "9999999999" },
     {
       key: "order",
@@ -22,7 +22,7 @@ export const TRAFFIC_CAMERAS_QUERY = {
 export const SIGNAL_CORRIDORS_QUERY = {
   resourceId: "efct-8fs9",
   format: "geojson",
-  params: [
+  args: [
     {
       key: "order",
       value: "location_name asc",
@@ -41,7 +41,7 @@ export const SIGNAL_CORRIDORS_QUERY = {
 export const SIGNAL_RETIMING_QUERY = {
   resourceId: "g8w2-8uap",
   format: "json",
-  params: [
+  args: [
     {
       key: "limit",
       value: "99999999",
@@ -52,7 +52,7 @@ export const SIGNAL_RETIMING_QUERY = {
 export const SIGNAL_STATUS_QUERY = {
   resourceId: "5zpr-dehc",
   format: "geojson",
-  params: [
+  args: [
     {
       key: "limit",
       value: "99999999",
@@ -71,7 +71,7 @@ export const SIGNAL_STATUS_QUERY = {
 export const SIGNAL_REQUESTS_QUERY = {
   resourceId: "p53x-x73x",
   format: "geojson",
-  params: [
+  args: [
     {
       key: "limit",
       value: "99999999",
@@ -83,6 +83,46 @@ export const SIGNAL_REQUESTS_QUERY = {
     {
       key: "select",
       value: "location_name,signal_id,signal_type,signal_status,location",
+    },
+  ],
+};
+
+// static query substrings
+const tripSelectorsQuery =
+  "avg(trip_duration)/60 as avg_duration_minutes, sum(trip_distance) * 0.000621371 as total_miles, avg(trip_distance) * 0.000621371 as avg_miles, count(trip_id) as total_trips";
+
+const tripFiltersQuery =
+  "trip_distance * 0.000621371 >= 0.1 AND trip_distance * 0.000621371 < 500 AND trip_duration < 86400";
+
+export const MICROMOBILITY_BY_MODE_QUERY = {
+  resourceId: "7d8e-dm7r",
+  format: "json",
+  args: [
+    {
+      key: "query",
+      value: `SELECT vehicle_type, ${tripSelectorsQuery} WHERE start_time BETWEEN '$startDate' AND '$endDate' AND ${tripFiltersQuery} GROUP BY vehicle_type`,
+    },
+  ],
+};
+
+export const MICROMOBILITY_DEVICE_COUNT_QUERY = {
+  resourceId: "7d8e-dm7r",
+  format: "json",
+  args: [
+    {
+      key: "query",
+      value: `SELECT DISTINCT device_id, vehicle_type WHERE start_time BETWEEN '$startDate' AND '$endDate' |> select vehicle_type, count(device_id) as unique_devices group by vehicle_type`,
+    },
+  ],
+};
+
+export const MICROMOBILITY_311_QUERY = {
+  resourceId: "5h38-fd8d",
+  format: "json",
+  args: [
+    {
+      key: "query",
+      value: `SELECT count(sr_type_code) as count WHERE sr_created_date BETWEEN '$startDate' AND '$endDate' AND sr_type_code == "DOCKMOBI"`,
     },
   ],
 };
