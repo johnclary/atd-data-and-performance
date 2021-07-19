@@ -62,9 +62,10 @@ const useQuery = ({ queryDef, queryDates }) => {
 function changeTimezone(date, ianatz = "UTC") {
   // construct a new date localized to the specificied ianatz
   const referenceDate = new Date(
+    // iOS will not parse a datestring with a comma!
     date.toLocaleString("en-US", {
       timeZone: ianatz,
-    })
+    }).replace(",", "")
   );
   // find the time offset between the two dates
   const diff = date.getTime() - referenceDate.getTime();
