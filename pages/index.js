@@ -137,8 +137,7 @@ export default function Home() {
             <p className="text-muted mt-3">
               This page has useful info, such as dashboards, maps, and misc
               other links to content that you may or may not find interesting.
-              Also, we have a data catalog that you can browse. That&aposd be
-              cool.
+              Also, we have a data catalog that you can browse.
             </p>
           </Col>
         </Row>
