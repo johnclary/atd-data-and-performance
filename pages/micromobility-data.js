@@ -95,7 +95,7 @@ export default function Viewer() {
     queryDef: MICROMOBILITY_311_QUERY,
     queryDates,
   });
-  console.log(dataByModeQuery);
+
   const dataByMode = useSocrata(dataByModeQuery);
   const deviceCount = useSocrata(deviceCountQuery);
   const threeOneOne = useSocrata(threeOneOneQuery);
@@ -204,7 +204,7 @@ export default function Viewer() {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={4}>
+          <Col>
             <p>
               This page summarizes shared micromobility trips reported to the
               City of Austin Transportation Department as part of the
@@ -212,33 +212,10 @@ export default function Viewer() {
               micromobility vehicle trips dataset, which spans from April 2018
               and is updated on a daily basis.
             </p>
-
             <p>
-              A trip record is included in this summary report if it meets the
-              following criteria: Trip distance at least 0.1 miles and less than
-              500 miles Trip duration less than 24 hours
-            </p>
-          </Col>
-          <Col xs={12} md={4}>
-            <p>
-              A trip record is included in this summary report if it meets the
-              following criteria: Trip distance at least 0.1 miles and less than
-              500 miles Trip duration less than 24 hours
-            </p>
-          </Col>
-          <Col xs={12} md={4}>
-            <p>
-              This page summarizes shared micromobility trips reported to the
-              City of Austin Transportation Department as part of the
-              Micromobility operating rules. Data is drawn from our shared
-              micromobility vehicle trips dataset, which spans from April 2018
-              and is updated on a daily basis.
-            </p>
-
-            <p>
-              A trip record is included in this summary report if it meets the
-              following criteria: Trip distance at least 0.1 miles and less than
-              500 miles Trip duration less than 24 hours
+              A trip record is included in this summary report if the trip
+              distance is at least 0.1 miles and less than 500 miles and the
+              trip duration less than 24 hours.
             </p>
           </Col>
         </Row>
