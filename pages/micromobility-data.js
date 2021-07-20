@@ -20,22 +20,24 @@ import styles from "../styles/Micromobility.module.css";
 
 console.log("remember to handle silent (and not silent) socrata errors...");
 
-const formatSocrataDate = (date) => {
+const formatSocrataDate = (date, name) => {
   // Format a socrata friendly date string...preserving UTC along the way to avoid localization issues
   // TODO: are MDS timestamps really in central time?
-  // what you're doing below is querying in UTC, which matches the current viewer
-  // but the metadata says it's in local time
   if (!date) return null;
   const year = date.getFullYear();
   let month = date.getMonth() + 1;
   const day = date.getDate();
-  return `${year}-${month}-${day}`;
+  const timeString = name === "startDate" ? "00:00:00" : "23:59:59";
+  return `${year}-${month}-${day}T${timeString}`;
 };
 
 const formatQuery = ({ queryString, queryDates }) => {
   // replace placeholder args with current values from state of queryParams
   Object.keys(queryDates).forEach((arg) => {
-    queryString = queryString.replace(`$${arg}`, queryDates[arg]);
+    queryString = queryString.replace(
+      `$${arg}`,
+      formatSocrataDate(queryDates[arg], arg)
+    );
   });
   return queryString;
 };
@@ -54,40 +56,18 @@ const useQuery = ({ queryDef, queryDates }) => {
   return query;
 };
 
-/**
- * Given a date and a timezone, returns a new date object in the specified timezone,
- * effectively replacing the timezone of the input date.
- * courtesy of: https://stackoverflow.com/questions/15141762/how-to-initialize-a-javascript-date-to-a-particular-time-zone
- */
-function changeTimezone(date, ianatz = "UTC") {
-  // construct a new date localized to the specificied ianatz
-  const referenceDate = new Date(
-    // iOS will not parse a datestring with a comma!
-    date.toLocaleString("en-US", {
-      timeZone: ianatz,
-    }).replace(",", "")
-  );
-  // find the time offset between the two dates
-  const diff = date.getTime() - referenceDate.getTime();
-  // construct a new date which accounts from the difference
-  return new Date(date.getTime() - diff);
-}
-
 const initStartDate = () => {
   // return the first day of the month if today is after the 10th, otherwise the first of last month
   // this importantly ensures there is data in the table that renders on init
   let startDate = new Date();
   if (startDate.getDate() < 10) startDate.setMonth(startDate.getMonth() - 1);
-  startDate.setDate(0);
-  // offset time to UTC. This enables us to initialize the datepicker on the first of
-  // the month **local time** (otherwise UTC the offset would bump us back to the previous day)
-  // we only need to do this on initializtion, then user-defined input takes over
-  return changeTimezone(startDate);
+  startDate.setDate(1);
+  return startDate;
 };
 
 const initDates = {
-  startDate: formatSocrataDate(initStartDate()),
-  endDate: formatSocrataDate(new Date()),
+  startDate: initStartDate(),
+  endDate: new Date(),
 };
 
 const isValid = (queryParams) => {
@@ -115,7 +95,7 @@ export default function Viewer() {
     queryDef: MICROMOBILITY_311_QUERY,
     queryDates,
   });
-
+  console.log(dataByModeQuery);
   const dataByMode = useSocrata(dataByModeQuery);
   const deviceCount = useSocrata(deviceCountQuery);
   const threeOneOne = useSocrata(threeOneOneQuery);
@@ -138,13 +118,13 @@ export default function Viewer() {
                 clearIcon={null}
                 calendarIcon={null}
                 locale="en-US"
-                minDate={new Date("2016-01-01")}
+                minDate={new Date("2018-04-01")}
                 maxDate={new Date()}
-                value={new Date(selectedDates.startDate)}
+                value={selectedDates.startDate}
                 onChange={(date) => {
                   setSelectedDates({
                     ...selectedDates,
-                    startDate: formatSocrataDate(date),
+                    startDate: date,
                   });
                 }}
               />
@@ -154,13 +134,13 @@ export default function Viewer() {
                 clearIcon={null}
                 calendarIcon={null}
                 locale="en-US"
-                minDate={new Date("2016-01-01")}
+                minDate={new Date("2018-04-01")}
                 maxDate={new Date()}
-                value={new Date(selectedDates.endDate)}
+                value={selectedDates.endDate}
                 onChange={(date) => {
                   setSelectedDates({
                     ...selectedDates,
-                    endDate: formatSocrataDate(date),
+                    endDate: date,
                   });
                 }}
               />
