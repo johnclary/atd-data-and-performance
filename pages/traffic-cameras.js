@@ -2,6 +2,7 @@ import React from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import Image from "react-bootstrap/Image";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
@@ -13,12 +14,26 @@ const COLORS = {
   offline: "#757575",
 };
 
+const renderCameraURL = (feature) => {
+  console.log(feature);
+  return (
+    <a href={`http://10.66.2.64:8000/?cam_id=${feature.properties.camera_id}`}>
+      View live feed (restricted access)
+    </a>
+  );
+};
+
+const renderThumbnail = (feature) => {
+  const url = feature.properties.screenshot_address;
+  return <Image onError={()=>{return <p>error</p>}} src={url} fluid />;
+};
+
 const mapOverlayConfig = {
   titleKey: "location_name",
   bodyKeys: [
-    // { key: "signal_count", label: "# of Signals" },
-    // { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
-    // { key: "engineer_note", label: "Note" },
+    { key: "ip_comm_status", label: "Status" },
+    { key: "screenshot_address", label: "Image", renderer: renderThumbnail },
+    { key: "camera_id", label: "Live feed", renderer: renderCameraURL },
   ],
 };
 
