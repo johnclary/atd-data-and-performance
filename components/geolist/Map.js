@@ -167,9 +167,13 @@ const MapOverlay = ({ selectedFeature, setSelectedFeature, config }) => {
           {config.bodyKeys &&
             config.bodyKeys.map((key) => {
               return (
-                <p key={key.key} className="mb-1">{`${key.label}: ${
-                  selectedFeature.properties[key.key] || "<none>"
-                }`}</p>
+                <p key={key.key} className="mb-1">
+                  {key.renderer
+                    ? key.renderer(selectedFeature)
+                    : `${key.label}: ${
+                        selectedFeature.properties[key.key] || ""
+                      }`}
+                </p>
               );
             })}
         </div>
@@ -192,7 +196,7 @@ export default function Map({
   mapOverlayConfig,
 }) {
   const isMapLoaded = useMap(mapContainerRef, mapRef);
-  
+
   /**
    * Add the geojson layer to the map (only once!)
    */
