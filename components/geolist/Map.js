@@ -3,7 +3,14 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import React, { useEffect, useRef, useState } from "react";
 import CloseButton from "react-bootstrap/CloseButton";
 import Spinner from "react-bootstrap/Spinner";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import {
+  Accordion,
+  ListGroup,
+  useAccordionButton,
+  Button,
+} from "react-bootstrap";
+import { FaCaretDown, FaCaretUp, FaMapMarkerAlt } from "react-icons/fa";
+
 import styles from "../../styles/Map.module.css";
 // TODO: move to build environment
 mapboxgl.accessToken =
@@ -142,42 +149,65 @@ const useMap = (mapContainerRef, mapRef) => {
   return isMapLoaded;
 };
 
+function CustomToggle({ children, eventKey }) {
+  const [isExpanded, setIsExpanded] = React.useState(true);
+  const decoratedOnClick = useAccordionButton(eventKey, () =>
+    setIsExpanded(!isExpanded)
+  );
+  return (
+    <div
+      className="d-flex w-100 justify-content-center bg-light"
+      onClick={decoratedOnClick}
+      role="button"
+      style={{ cursor: "pointer" }}
+    >
+      <h6>{!isExpanded ? <FaCaretDown /> : <FaCaretUp />}</h6>
+    </div>
+  );
+}
+
 /**
  * A dialogue that renders selected feature info across the top of map.
  **/
 const MapOverlay = ({ selectedFeature, setSelectedFeature, config }) => {
-  // TODO: add aria tags?
   return (
     <div className="map-overlay-container">
-      <div className="list-group">
-        <div className="list-group-item " aria-current="true">
-          <div className="d-flex w-100 justify-content-between">
-            <h5 className="mb-1">
-              <span className="text-dts-4">
-                <FaMapMarkerAlt />
-              </span>{" "}
-              {selectedFeature.properties[config.titleKey] || ""}
-            </h5>
-            <CloseButton
-              onClick={() => {
-                setSelectedFeature(null);
-              }}
-            />
-          </div>
-          {config.bodyKeys &&
-            config.bodyKeys.map((key) => {
-              return (
-                <p key={key.key} className="mb-1">
-                  {key.renderer
-                    ? key.renderer(selectedFeature)
-                    : `${key.label}: ${
-                        selectedFeature.properties[key.key] || ""
-                      }`}
-                </p>
-              );
-            })}
+      <Accordion defaultActiveKey="0" flush>
+        <div className="d-flex w-100 justify-content-between">
+          <h5 className="mb-1">
+            <span className="text-dts-4">
+              <FaMapMarkerAlt />
+            </span>{" "}
+            {selectedFeature.properties[config.titleKey] || ""}
+          </h5>
+          <CloseButton
+            onClick={() => {
+              setSelectedFeature(null);
+            }}
+          />
         </div>
-      </div>
+        <Accordion.Collapse eventKey="0">
+          <ListGroup key="data-list" variant="flush">
+            {config.bodyKeys &&
+              config.bodyKeys.map((key) => {
+                return (
+                  <ListGroup.Item key={key.key}>
+                    {key.renderer
+                      ? key.renderer(selectedFeature)
+                      : `${key.label}: ${
+                          selectedFeature.properties[key.key] || ""
+                        }`}
+                  </ListGroup.Item>
+                );
+              })}
+          </ListGroup>
+        </Accordion.Collapse>
+        <ListGroup key="collapse-button" variant="flush">
+          <ListGroup.Item>
+            <CustomToggle eventKey="0" />
+          </ListGroup.Item>
+        </ListGroup>
+      </Accordion>
     </div>
   );
 };
