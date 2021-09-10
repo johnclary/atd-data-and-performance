@@ -419,8 +419,7 @@ export default function Viewer() {
               <Col xs={12} md={6} className="text-center">
                 <h5 className="text-primary">Travel Time Reduced</h5>
                 <span style={{ fontSize: "52px" }}>
-                  {totalTravelTimeChange &&
-                    formatPercent(totalTravelTimeChange, 1)}
+                  {formatPercent(totalTravelTimeChange || 0, 1)}
                 </span>
               </Col>
             </Row>
