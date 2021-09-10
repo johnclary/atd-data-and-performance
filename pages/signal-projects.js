@@ -103,6 +103,41 @@ const POINT_LAYER_STYLE = {
 const FILTERS = {
   checkbox: [
     {
+      key: "Ineligble",
+      value: "DESIGN",
+      featureProp: "signal_status",
+      label: "Ineligble",
+      checked: true,
+    },
+    {
+      key: "Requested",
+      value: "DESIGN",
+      featureProp: "signal_status",
+      label: "Requested",
+      checked: true,
+    },
+    {
+      key: "Study in progress",
+      value: "DESIGN",
+      featureProp: "signal_status",
+      label: "Study in progress",
+      checked: true,
+    },
+    {
+      key: "Not recommended",
+      value: "DESIGN",
+      featureProp: "signal_status",
+      label: "Not recommended",
+      checked: true,
+    },
+    {
+      key: "Recommended",
+      value: "DESIGN",
+      featureProp: "signal_status",
+      label: "Recommended",
+      checked: true,
+    },
+    {
       key: "design",
       value: "DESIGN",
       featureProp: "signal_status",
@@ -142,7 +177,7 @@ export default function Viewer() {
       <Container fluid>
         <Row>
           <Col>
-            <h2 className="text-primary">Signal Requests</h2>
+            <h2 className="text-primary">Signal Projects</h2>
           </Col>
         </Row>
         <GeoList
