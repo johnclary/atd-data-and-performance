@@ -3,10 +3,12 @@ import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import { ListGroup } from "react-bootstrap";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
-import useSocrata from "../utils/socrata.js";
+import { DataMetaData } from "../components/Metadata";
+import { useSocrata } from "../utils/socrata.js";
 import { SIGNAL_STATUS_QUERY } from "../components/queries";
 
 const OPERATION_STATES = [
@@ -36,15 +38,6 @@ const OPERATION_STATES = [
   },
 ];
 
-const mapOverlayConfig = {
-  titleKey: "location_name",
-  bodyKeys: [
-    // { key: "signal_count", label: "# of Signals" },
-    // { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
-    // { key: "engineer_note", label: "Note" },
-  ],
-};
-
 const renderOperationState = (inputOpState) => {
   const opState = OPERATION_STATES.find((opState) => {
     return opState.value === inputOpState;
@@ -73,6 +66,51 @@ const listItemRenderer = (feature) => {
         </small>
       </p>
     </>
+  );
+};
+
+const FlexyInfo = ({ label, value }) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <p className="fw-bold my-0">
+        <small>{label}</small>
+      </p>
+      <p className="my-0">
+        <small>{value}</small>
+      </p>
+    </div>
+  );
+};
+
+const detailsRenderer = (feature) => {
+  return (
+    <Col>
+      <ListGroup variant="flush">
+        <ListGroup.Item>
+          <span className="fs-4 fw-bold me-2">
+            {feature.properties.location_name}
+          </span>
+          <span className="text-muted fst-italic">cool info!</span>
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo
+            label="Status"
+            value={renderOperationState(feature.properties.operation_state)}
+          />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo
+            label="Status date"
+            value={new Date(
+              feature.properties.operation_state_datetime
+            ).toLocaleString()}
+          />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo label="Signal ID" value={feature.properties.signal_id} />
+        </ListGroup.Item>
+      </ListGroup>
+    </Col>
   );
 };
 
@@ -155,12 +193,13 @@ export default function Viewer() {
             );
           })}
         </Row>
+        <DataMetaData resourceId={SIGNAL_STATUS_QUERY.resourceId} />
         <GeoList
           geojson={data}
           listItemRenderer={listItemRenderer}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
-          mapOverlayConfig={mapOverlayConfig}
+          detailsRenderer={detailsRenderer}
         />
         <Row key="about-title" className="mt-4 mb-2 text-primary">
           <Col>

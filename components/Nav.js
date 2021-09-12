@@ -12,7 +12,7 @@ import Link from "next/link";
 
 const PAGES = [
   { label: "Viewers", route: "/projects" },
-  { label: "Data Catalog", route: "/products" },
+  { label: "Data Catalog", route: "/data-catalog" },
   { label: "About", route: "/about" },
 ];
 

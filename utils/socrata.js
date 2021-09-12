@@ -30,10 +30,20 @@ const buildUrl = ({ resourceId, format, query }) => {
   return url;
 };
 
-export default function useSocrata({ resourceId, format, args }) {
+export function useSocrata({ resourceId, format, args }) {
   const query = buildQuery(args);
   const url = buildUrl({ resourceId, format, query });
   // by passing an array of args as the useSWR key, SWR will detect changes to the inputs and re-fetch as needed
+  const { data, error } = useSWR(url, fetcher);
+  return {
+    data: data,
+    loading: !error && !data,
+    error: error,
+  };
+}
+
+export function useSocrataMetadata({ resourceId }) {
+  const url = `https://data.austintexas.gov/api/views/${resourceId}.json`;
   const { data, error } = useSWR(url, fetcher);
   return {
     data: data,

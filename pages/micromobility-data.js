@@ -9,7 +9,7 @@ import BsTable from "react-bootstrap/Table";
 import { format as d3Format } from "d3-format";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
-import useSocrata from "../utils/socrata.js";
+import { useSocrata } from "../utils/socrata.js";
 import DatePicker from "../components/DatePicker";
 import {
   MICROMOBILITY_BY_MODE_QUERY,

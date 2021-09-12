@@ -7,6 +7,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import Navbar from "react-bootstrap/Navbar";
 import Row from "react-bootstrap/Row";
+import Fade from "react-bootstrap/Fade";
 import { BsSearch } from "react-icons/bs";
 import { FaCaretDown, FaCaretUp, FaMapMarkerAlt } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
@@ -223,6 +224,54 @@ function MapModal({ showMap, setShowMap, children }) {
   );
 }
 
+const DetailsThing = ({
+  detailsRenderer,
+  feature,
+  setSelectedFeature,
+  setShowMap,
+  isSmallScreen,
+  map,
+}) => {
+  const [open, setIsOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 100);
+  }, []);
+
+  return (
+    <Fade in={open}>
+      <Col>
+        <Row>
+          <Col>
+            <Button size="sm" onClick={() => setSelectedFeature(null)}>
+              {"< Back to list"}
+            </Button>
+          </Col>
+          {isSmallScreen && (
+            <Col xs="auto">
+              <Button
+                variant="outline-dts-4"
+                size="sm"
+                onClick={() => {
+                  setShowMap(true);
+                  setTimeout(() => {
+                    map.current?.resize();
+                  }, 400);
+                }}
+              >
+                <FaMapMarkerAlt /> Map
+              </Button>
+            </Col>
+          )}
+        </Row>
+        <Row>{detailsRenderer(feature)}</Row>
+      </Col>
+    </Fade>
+  );
+};
+
 const useSelectedFeatureEffect = (
   mapRef,
   layerId,
@@ -276,8 +325,10 @@ export default function GeoList({
   filterDefs,
   selectedFeatureEffect,
   mapOverlayConfig,
+  detailsRenderer,
 }) {
   const [showMap, setShowMap] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
   const [selectedFeature, setSelectedFeature] = React.useState(null);
   const [filteredGeosjon, filters, setFilters] = useFilteredGeojson({
     geojson,
@@ -291,6 +342,13 @@ export default function GeoList({
     layerStyle.id,
     selectedFeature,
     selectedFeatureEffect
+  );
+
+  // bootstrap `md` and lower
+  const isSmallScreen = useMediaQuery(
+    { query: "(max-width: 991px)" },
+    undefined,
+    () => repaintMap(mapRef.current)
   );
 
   const onFeatureClick = (e) => {
@@ -314,65 +372,58 @@ export default function GeoList({
       setSelectedFeature(null);
     }
     setSelectedFeature(feature);
-    setShowMap(true);
     repaintMap(mapRef.current);
   };
-
-  // bootstrap `md` and lower
-  const isSmallScreen = useMediaQuery(
-    { query: "(max-width: 991px)" },
-    undefined,
-    () => repaintMap(mapRef.current)
-  );
 
   useConditionalOverflow(isSmallScreen, showMap);
 
   return (
     <>
       <Row>
-        <Col xs={12} lg={4}>
-          <Row style={{ height: 500, overflow: "hidden" }}>
+        <Col xs={12} md={4}>
+          <Row style={{ height: "75vh", overflow: "hidden" }}>
             <Col>
-              <Row>
-                <Col>
-                  <TableSearch
+              {selectedFeature && (
+                <Row style={{ height: "75vh", overflow: "auto" }}>
+                  <DetailsThing
+                    feature={selectedFeature}
+                    detailsRenderer={detailsRenderer}
+                    feature={selectedFeature}
                     setSelectedFeature={setSelectedFeature}
-                    filters={filters}
-                    setFilters={setFilters}
+                    setShowMap={setShowMap}
+                    isSmallScreen={isSmallScreen}
+                    map={mapRef.current}
                   />
-                </Col>
-                {isSmallScreen && (
-                  <Col xs="auto">
-                    <Button
-                      variant="outline-dts-4"
-                      size="sm"
-                      onClick={() => {
-                        setShowMap(!showMap);
-                        setTimeout(() => {
-                          mapRef.current?.resize();
-                        }, 400);
-                      }}
-                    >
-                      <FaMapMarkerAlt /> Map
-                    </Button>
+                </Row>
+              )}
+              <div className={selectedFeature ? "d-none" : ""}>
+                <Row>
+                  <Col>
+                    <TableSearch
+                      setSelectedFeature={setSelectedFeature}
+                      filters={filters}
+                      setFilters={setFilters}
+                    />
                   </Col>
-                )}
-              </Row>
-              <Row style={{ height: 500, overflow: "auto" }}>
-                <Col className="pb-5">
-                  <List
-                    features={filteredGeosjon?.features}
-                    onRowClick={onRowClick}
-                    listItemRenderer={listItemRenderer}
-                  />
-                </Col>
-              </Row>
+                </Row>
+                <Row style={{ height: "75vh", overflow: "auto" }}>
+                  <Col className="pb-5">
+                    <List
+                      features={filteredGeosjon?.features}
+                      onRowClick={onRowClick}
+                      listItemRenderer={listItemRenderer}
+                      selectedFeature={selectedFeature}
+                      setSelectedFeature={setSelectedFeature}
+                    />
+                  </Col>
+                </Row>
+              </div>
             </Col>
           </Row>
         </Col>
         {!isSmallScreen && (
           <Col>
-            <Row style={{ height: 500 }}>
+            <Row style={{ height: "75vh" }}>
               <Col>
                 <Map
                   geojson={filteredGeosjon}
@@ -390,23 +441,21 @@ export default function GeoList({
         )}
         {isSmallScreen && (
           <MapModal showMap={showMap} setShowMap={setShowMap}>
-            {!selectedFeature && (
-              <Button
-                className="btn-outline-primary bg-white"
-                style={{
-                  zIndex: 99999999,
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  margin: 5,
-                }}
-                onClick={() => {
-                  setShowMap(false);
-                }}
-              >
-                Close map
-              </Button>
-            )}
+            <Button
+              className="btn-outline-primary bg-white"
+              style={{
+                zIndex: 99999999,
+                position: "absolute",
+                top: 0,
+                right: 0,
+                margin: 5,
+              }}
+              onClick={() => {
+                setShowMap(false);
+              }}
+            >
+              Close map
+            </Button>
             <Map
               geojson={filteredGeosjon}
               layerStyle={layerStyle}

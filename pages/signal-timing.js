@@ -3,12 +3,14 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
+import { ListGroup } from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import { Cell, Label, Pie, PieChart, ResponsiveContainer } from "recharts";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
-import useSocrata from "../utils/socrata.js";
+import { DataMetaData } from "../components/Metadata";
+import { useSocrata } from "../utils/socrata.js";
 import {
   SIGNAL_RETIMING_QUERY,
   SIGNAL_CORRIDORS_QUERY,
@@ -51,6 +53,60 @@ const listItemRenderer = (feature) => {
         </p>
       </div>
     </>
+  );
+};
+
+const FlexyInfo = ({ label, value }) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <p className="fw-bold my-0">
+        <small>{label}</small>
+      </p>
+      <p className="my-0">
+        <small>{value}</small>
+      </p>
+    </div>
+  );
+};
+
+const detailsRenderer = (feature) => {
+  return (
+    <Col>
+      <ListGroup variant="flush">
+        <ListGroup.Item>
+          <span className="fs-2 fw-bold me-2">
+            {feature.properties.system_name}
+          </span>
+          <span className="text-muted fst-italic">corridor</span>
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo label="Status" value={feature.properties.retime_status} />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo
+            label="No. of Signals"
+            value={feature.properties.signal_count}
+          />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo
+            label="Travel time reduced (%)"
+            value={formatPercent(feature.properties.vol_wavg_tt_pct_change)}
+          />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo
+            label="Travel time reduced (seconds)"
+            value={
+              parseFloat(feature.properties.vol_wavg_tt_seconds).toFixed(1) || 0
+            }
+          />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          {feature.properties.engineer_note || ""}
+        </ListGroup.Item>
+      </ListGroup>
+    </Col>
   );
 };
 
@@ -425,12 +481,13 @@ export default function Viewer() {
             </Row>
           </Col>
         </Row>
+        <DataMetaData resourceId={SIGNAL_RETIMING_QUERY.resourceId} />
         <GeoList
+          detailsRenderer={detailsRenderer}
           geojson={signalCorridorsFiltered}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
           selectedFeatureEffect={selectedFeatureEffect}
-          mapOverlayConfig={mapOverlayConfig}
           listItemRenderer={listItemRenderer}
         />
       </Container>

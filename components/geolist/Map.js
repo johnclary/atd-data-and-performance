@@ -167,52 +167,6 @@ function CustomToggle({ children, eventKey }) {
 }
 
 /**
- * A dialogue that renders selected feature info across the top of map.
- **/
-const MapOverlay = ({ selectedFeature, setSelectedFeature, config }) => {
-  return (
-    <div className="map-overlay-container">
-      <Accordion defaultActiveKey="0" flush>
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">
-            <span className="text-dts-4">
-              <FaMapMarkerAlt />
-            </span>{" "}
-            {selectedFeature.properties[config.titleKey] || ""}
-          </h5>
-          <CloseButton
-            onClick={() => {
-              setSelectedFeature(null);
-            }}
-          />
-        </div>
-        <Accordion.Collapse eventKey="0">
-          <ListGroup key="data-list" variant="flush">
-            {config.bodyKeys &&
-              config.bodyKeys.map((key) => {
-                return (
-                  <ListGroup.Item key={key.key}>
-                    {key.renderer
-                      ? key.renderer(selectedFeature)
-                      : `${key.label}: ${
-                          selectedFeature.properties[key.key] || ""
-                        }`}
-                  </ListGroup.Item>
-                );
-              })}
-          </ListGroup>
-        </Accordion.Collapse>
-        <ListGroup key="collapse-button" variant="flush">
-          <ListGroup.Item>
-            <CustomToggle eventKey="0" />
-          </ListGroup.Item>
-        </ListGroup>
-      </Accordion>
-    </div>
-  );
-};
-
-/**
  * A customizeable Mapbox GL map component which renders a point or multipoint layer and enables basic interactivity.
  **/
 export default function Map({
@@ -223,7 +177,6 @@ export default function Map({
   selectedFeature,
   setSelectedFeature,
   onFeatureClick,
-  mapOverlayConfig,
 }) {
   const isMapLoaded = useMap(mapContainerRef, mapRef);
 
@@ -256,13 +209,6 @@ export default function Map({
     <div className={styles["map-container"]} ref={mapContainerRef}>
       {selectedFeature && (
         <>
-          {mapOverlayConfig && (
-            <MapOverlay
-              selectedFeature={selectedFeature}
-              setSelectedFeature={setSelectedFeature}
-              config={mapOverlayConfig}
-            />
-          )}
           {selectedFeature.geometry.type === "Point" && (
             <Marker map={mapRef.current} feature={selectedFeature} />
           )}

@@ -88,7 +88,7 @@ const cards = {
       title: "Data Catalog",
       description:
         "Info about signal requests where you can search and browse info.",
-      href: "/not-implemented-4",
+      href: "/data-catalog",
       img: null,
     },
     {

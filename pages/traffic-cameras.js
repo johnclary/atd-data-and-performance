@@ -6,7 +6,9 @@ import Image from "react-bootstrap/Image";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
-import useSocrata from "../utils/socrata.js";
+import { useSocrata } from "../utils/socrata.js";
+import { DataMetaData } from "../components/Metadata";
+import { ListGroup } from "react-bootstrap";
 import { TRAFFIC_CAMERAS_QUERY } from "../components/queries";
 
 const COLORS = {
@@ -25,7 +27,15 @@ const renderCameraURL = (feature) => {
 
 const renderThumbnail = (feature) => {
   const url = feature.properties.screenshot_address;
-  return <Image onError={()=>{return <p>error</p>}} src={url} fluid />;
+  return (
+    <Image
+      onError={() => {
+        return <p>error</p>;
+      }}
+      src={url}
+      fluid
+    />
+  );
 };
 
 const mapOverlayConfig = {
@@ -74,6 +84,47 @@ const listItemRenderer = (feature) => {
         </p>
       </div>
     </>
+  );
+};
+
+const FlexyInfo = ({ label, value }) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <p className="fw-bold my-0">
+        <small>{label}</small>
+      </p>
+      <p className="my-0">
+        <small>{value}</small>
+      </p>
+    </div>
+  );
+};
+
+const detailsRenderer = (feature) => {
+  console.log(feature);
+  return (
+    <Col>
+      <ListGroup variant="flush">
+        <ListGroup.Item>
+          <span className="fs-4 fw-bold me-2">
+            {feature.properties.location_name}
+          </span>
+          <span className="text-muted fst-italic">cool info!</span>
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo label="Status" value={feature.properties.ip_comm_status} />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo
+            label="Url (broken)"
+            value={feature.properties.screenshot_address}
+          />
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo label="Camera ID" value={feature.properties.camera_id} />
+        </ListGroup.Item>
+      </ListGroup>
+    </Col>
   );
 };
 
@@ -132,7 +183,7 @@ export default function Viewer() {
           listItemRenderer={listItemRenderer}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
-          mapOverlayConfig={mapOverlayConfig}
+          detailsRenderer={detailsRenderer}
         />
       </Container>
       <Footer />

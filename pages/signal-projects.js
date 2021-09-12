@@ -2,20 +2,15 @@ import React from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import ListGroup from "react-bootstrap/ListGroup";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
-import useSocrata from "../utils/socrata.js";
+import { useSocrata } from "../utils/socrata.js";
+import { DataMetaData } from "../components/Metadata";
 import { SIGNAL_REQUESTS_QUERY } from "../components/queries";
 
-const mapOverlayConfig = {
-  titleKey: "location_name",
-  bodyKeys: [
-    // { key: "signal_count", label: "# of Signals" },
-    // { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
-    // { key: "engineer_note", label: "Note" },
-  ],
-};
+import { signalData } from "../utils/signalData";
 
 const STATUS_STYLES = {
   DESIGN: {
@@ -80,6 +75,42 @@ const listItemRenderer = (feature) => {
         </p>
       </div>
     </>
+  );
+};
+
+const FlexyInfo = ({ label, value }) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <p className="fw-bold my-0">
+        <small>{label}</small>
+      </p>
+      <p className="my-0">
+        <small>{value}</small>
+      </p>
+    </div>
+  );
+};
+
+const detailsRenderer = (feature) => {
+  return (
+    <Col>
+      <ListGroup variant="flush">
+        <ListGroup.Item>
+          <span className="fs-4 fw-bold me-2">
+            {feature.properties.location_name}
+          </span>
+          <span className="text-muted fst-italic">
+            {renderSignalType(feature.properties.signal_type)}
+          </span>
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <FlexyInfo
+            label="Status"
+            value={renderSignalStatus(feature.properties.signal_status)}
+          />
+        </ListGroup.Item>
+      </ListGroup>
+    </Col>
   );
 };
 
@@ -168,8 +199,10 @@ const FILTERS = {
   },
 };
 
+
 export default function Viewer() {
-  const { data, loading, error } = useSocrata(SIGNAL_REQUESTS_QUERY);
+  // const { data, loading, error } = useSocrata(SIGNAL_REQUESTS_QUERY);
+  const data = signalData;
 
   return (
     <>
@@ -180,12 +213,13 @@ export default function Viewer() {
             <h2 className="text-primary">Signal Projects</h2>
           </Col>
         </Row>
+        <DataMetaData resourceId={SIGNAL_REQUESTS_QUERY.resourceId} />
         <GeoList
           geojson={data}
           listItemRenderer={listItemRenderer}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
-          mapOverlayConfig={mapOverlayConfig}
+          detailsRenderer={detailsRenderer}
         />
         <Row className="mt-4 mb-2 text-primary">
           <Col>
