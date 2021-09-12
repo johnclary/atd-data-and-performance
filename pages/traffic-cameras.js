@@ -29,6 +29,7 @@ const renderThumbnail = (feature) => {
   const url = feature.properties.screenshot_address;
   return (
     <Image
+      alt="Image from traffic camera"
       onError={() => {
         return <p>error</p>;
       }}

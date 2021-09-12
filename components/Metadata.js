@@ -11,6 +11,7 @@ export const DataMetaData = ({ resourceId }) => {
   }
   const updatedAt = new Date(data.rowsUpdatedAt * 1000).toLocaleString();
   const downloadUrl = `https://data.austintexas.gov/dataset/Traffic-Signals-and-Pedestrian-Signals/${resourceId}`;
+
   return (
     <Row>
       <Col xs={12}>
@@ -18,7 +19,7 @@ export const DataMetaData = ({ resourceId }) => {
           <small>
             {`Updated at ${updatedAt}`}
             <span className="mx-2">|</span>
-            <a href={downloadUrl} target="_blank">
+            <a href={downloadUrl} target="_blank" rel="noreferrer">
               Data
             </a>
             <span className="mx-2">

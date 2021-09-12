@@ -27,7 +27,7 @@ export default function Viewer() {
           </Col>
         </Row>
         {data.records.map((record) => {
-          return <p>{record.field_48}</p>;
+          return <p key={record.id}>{record.field_48}</p>;
         })}
       </Container>
       <Footer />

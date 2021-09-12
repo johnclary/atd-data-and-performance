@@ -388,7 +388,6 @@ export default function GeoList({
                   <DetailsThing
                     feature={selectedFeature}
                     detailsRenderer={detailsRenderer}
-                    feature={selectedFeature}
                     setSelectedFeature={setSelectedFeature}
                     setShowMap={setShowMap}
                     isSmallScreen={isSmallScreen}
@@ -433,7 +432,6 @@ export default function GeoList({
                   selectedFeature={selectedFeature}
                   setSelectedFeature={setSelectedFeature}
                   onFeatureClick={onFeatureClick}
-                  mapOverlayConfig={mapOverlayConfig}
                 />
               </Col>
             </Row>
@@ -464,7 +462,6 @@ export default function GeoList({
               selectedFeature={selectedFeature}
               setSelectedFeature={setSelectedFeature}
               onFeatureClick={onFeatureClick}
-              mapOverlayConfig={mapOverlayConfig}
             />
           </MapModal>
         )}
