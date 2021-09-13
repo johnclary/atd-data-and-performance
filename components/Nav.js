@@ -11,12 +11,11 @@ import {
 import Link from "next/link";
 
 const PAGES = [
-  { label: "Viewers", route: "/projects" },
   { label: "Data Catalog", route: "/data-catalog" },
   { label: "About", route: "/about" },
 ];
 
-function IconSeparator(props) {
+export const IconSeparator = () => {
   return (
     <Container fluid>
       <Row>
@@ -37,7 +36,7 @@ function IconSeparator(props) {
       </Row>
     </Container>
   );
-}
+};
 
 export default function NavComponent(props) {
   const { currentPageRoute, hideSeparator } = props;
@@ -48,7 +47,10 @@ export default function NavComponent(props) {
         <Container fluid key="nav-container">
           <div className="d-flex flex-nowrap">
             <Link href="/" passHref>
-              <Navbar.Brand style={{cursor: "pointer"}} className="pl-0 me-auto">
+              <Navbar.Brand
+                style={{ cursor: "pointer" }}
+                className="pl-0 me-auto"
+              >
                 <Image
                   width={300}
                   className="d-none d-md-inline"
