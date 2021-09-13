@@ -153,6 +153,11 @@ export function CardItem({ title, value }) {
   );
 }
 
+/**
+ * Calculates count of signals by status type
+ * @param {object} data Geojson FeatureCollection of signal features
+ * @returns {object} an object map with one key/count per status
+ */
 const useMetricData = (data) => {
   const [metricData, setMetricData] = React.useState({});
 
