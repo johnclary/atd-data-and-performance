@@ -34,27 +34,27 @@ export default function Viewer() {
               This source code is open!
             </h3>
             <p>
-              Here's some more info. Here's some more info. Here's some more
-              info. Here's some more info. Here's some more info. Here's some
-              more info. Here's some more info. Here's some more info.
+              Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some more
+              info. Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some
+              more info. Here&apos;s some more info. Here&apos;s some more info.
             </p>
             <h3 className="text-primary mt-5">
               It has been created by Data & Technology Services!
             </h3>
             <p>
-              Here's some more info. Here's some more info. Here's some more
-              info. Here's some more info. Here's some more info. Here's some
-              more info. Here's some more info. Here's some more info.
+              Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some more
+              info. Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some
+              more info. Here&apos;s some more info. Here&apos;s some more info.
             </p>
             <p>
-              Here's some more info. Here's some more info. Here's some more
-              info. Here's some more info. Here's some more info. Here's some
-              more info. Here's some more info. Here's some more info.
+              Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some more
+              info. Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some
+              more info. Here&apos;s some more info. Here&apos;s some more info.
             </p>
             <p>
-              Here's some more info. Here's some more info. Here's some more
-              info. Here's some more info. Here's some more info. Here's some
-              more info. Here's some more info. Here's some more info.
+              Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some more
+              info. Here&apos;s some more info. Here&apos;s some more info. Here&apos;s some
+              more info. Here&apos;s some more info. Here&apos;s some more info.
             </p>
           </Col>
         </Row>
