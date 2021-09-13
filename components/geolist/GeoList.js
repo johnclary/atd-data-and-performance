@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -12,7 +12,13 @@ import { BsSearch } from "react-icons/bs";
 import { FaCaretDown, FaCaretUp, FaMapMarkerAlt } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import List from "./List";
-import Map, { easeToPointFeature, fitFeatureBounds } from "./Map";
+import Map from "./Map";
+import { easeToPointFeature, fitFeatureBounds } from "./helpers";
+import {
+  useFilteredGeojson,
+  useSelectedFeatureEffect,
+  useConditionalOverflow,
+} from "./helpers";
 /*
   GeoList is an interactive map-table component that can be configured to display a geojson FeatureCollection
   of point features. You feed it geojson data and a few configuration objects, and it presents a side-by-side
@@ -33,14 +39,6 @@ import Map, { easeToPointFeature, fitFeatureBounds } from "./Map";
   - The UX will not be great if you opt to render more than two or three table columns. Use the map overlay
     to display additional data.
 */
-
-// https://getbootstrap.com/docs/5.0/layout/breakpoints/
-// X-Small None  <576px
-// Small sm  ≥576px
-// Medium  md  ≥768px
-// Large lg  ≥992px
-// Extra large xl  ≥1200px
-// Extra extra large xxl ≥1400p
 
 const CheckBoxFilters = ({ filters, setFilters }) => {
   const onChange = (filter) => {
@@ -87,7 +85,7 @@ const CheckBoxFilters = ({ filters, setFilters }) => {
  * react-bootstrap Button component
  **/
 const FilterButton = (props) => {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Button
       id="filter-button-toggle"
@@ -147,54 +145,6 @@ const TableSearch = ({ filters, setFilters, setSelectedFeature }) => {
   );
 };
 
-const stringIncludesCaseInsensitive = (str, val) => {
-  return str.toLowerCase().includes(val.toLowerCase());
-};
-
-/**
- * Custom hook that that applies search and checkbox filter states to geojson features
- **/
-const useFilteredGeojson = ({ geojson, filterDefs }) => {
-  const [filters, setFilters] = React.useState(filterDefs);
-  const [filteredGeosjon, setFilteredGeojson] = React.useState(geojson);
-  /*
-    todo: we could be more efficient here by filtering on the previously filtered geojson
-    but it would require more state. if the table is going to handle more than ~1000 rows
-    we should implement this.
-    also consider adding a timeout function to the search filter component so that it doesn't
-    re-filter on each key input
-  */
-  React.useEffect(() => {
-    if (!geojson?.features) return;
-    // create a mutable copy of geojson
-    let currentGeojson = { ...geojson };
-    let currentCheckedFilters = filters.checkbox?.filter((f) => f.checked);
-    let currentSearchVal = filters.search.value;
-    // apply checkbox filters if any exist and are checked
-    if (currentCheckedFilters && currentCheckedFilters.length > 0) {
-      currentGeojson.features = currentGeojson.features.filter((feature) => {
-        return (
-          // filter is applied by matching feature prop val exactly to filter val
-          currentCheckedFilters.some((filter) => {
-            return filter.value === feature.properties[filter.featureProp];
-          })
-        );
-      });
-    }
-    // apply search term filter
-    if (currentSearchVal) {
-      currentGeojson.features = currentGeojson.features.filter((feature) => {
-        return stringIncludesCaseInsensitive(
-          feature.properties[filters.search.featureProp] || "",
-          currentSearchVal
-        );
-      });
-    }
-    setFilteredGeojson(currentGeojson);
-  }, [geojson, filters]);
-  return [filteredGeosjon, filters, setFilters];
-};
-
 /**
  * A fullscreen modal into which the map is rendered.
  *
@@ -224,17 +174,18 @@ function MapModal({ showMap, setShowMap, children }) {
   );
 }
 
-const DetailsThing = ({
+const ListItemDetails = ({
   detailsRenderer,
   feature,
   setSelectedFeature,
   setShowMap,
   isSmallScreen,
-  map,
+  delayedRepaintMap,
 }) => {
-  const [open, setIsOpen] = React.useState(false);
+  const [open, setIsOpen] = useState(false);
 
-  React.useEffect(() => {
+  // Delay fade effect to ensure it's visibile
+  useEffect(() => {
     setTimeout(() => {
       setIsOpen(true);
     }, 100);
@@ -256,9 +207,7 @@ const DetailsThing = ({
                 size="sm"
                 onClick={() => {
                   setShowMap(true);
-                  setTimeout(() => {
-                    map.current?.resize();
-                  }, 400);
+                  delayedRepaintMap();
                 }}
               >
                 <FaMapMarkerAlt /> Map
@@ -272,64 +221,16 @@ const DetailsThing = ({
   );
 };
 
-const useSelectedFeatureEffect = (
-  mapRef,
-  layerId,
-  selectedFeature,
-  selectedFeatureEffect
-) => {
-  React.useEffect(() => {
-    if (
-      !selectedFeatureEffect ||
-      !mapRef.current ||
-      !mapRef.current.getLayer(layerId)
-    ) {
-      return;
-    }
-    selectedFeatureEffect(mapRef.current, selectedFeature);
-  }, [mapRef, selectedFeature, layerId, selectedFeatureEffect]);
-};
-
-/**
- * Hide overflow when map modal is showing on mobile, otherwise auto
- **/
-const useConditionalOverflow = (isSmallScreen, showMap) => {
-  React.useEffect(() => {
-    if (isSmallScreen && !showMap) {
-      document.body.classList.remove("modal-open");
-      document.body.style.overflow = "auto";
-    } else if (isSmallScreen && showMap) {
-      document.body.classList.add("modal-open");
-      document.body.style.overflow = "hidden";
-    } else {
-      // not-small screen
-      document.body.classList.remove("modal-open");
-      document.body.style.overflow = "auto";
-    }
-  }, [isSmallScreen, showMap]);
-};
-
-/**
- * repaint the map after a brief delay to allow the DOM to catchup
- **/
-const repaintMap = (map) => {
-  setTimeout(() => {
-    map?.resize();
-  }, 100);
-};
-
 export default function GeoList({
   geojson,
   listItemRenderer,
   layerStyle,
   filterDefs,
   selectedFeatureEffect,
-  mapOverlayConfig,
   detailsRenderer,
 }) {
-  const [showMap, setShowMap] = React.useState(false);
-  const [showModal, setShowModal] = React.useState(false);
-  const [selectedFeature, setSelectedFeature] = React.useState(null);
+  const [showMap, setShowMap] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState(null);
   const [filteredGeosjon, filters, setFilters] = useFilteredGeojson({
     geojson,
     filterDefs,
@@ -344,17 +245,25 @@ export default function GeoList({
     selectedFeatureEffect
   );
 
+  /**
+   * repaint the map after a brief delay to allow the DOM to catchup
+   **/
+  const delayedRepaintMap = () => {
+    setTimeout(() => {
+      mapRef?.current?.resize();
+    }, 100);
+  };
+
   // bootstrap `md` and lower
   const isSmallScreen = useMediaQuery(
     { query: "(max-width: 991px)" },
     undefined,
-    () => repaintMap(mapRef.current)
+    () => delayedRepaintMap(mapRef.current)
   );
 
   const onFeatureClick = (e) => {
     const clickedFeature = e.features[0];
     setSelectedFeature(clickedFeature);
-    // ;
   };
 
   const onRowClick = (feature) => {
@@ -364,7 +273,7 @@ export default function GeoList({
       } else if (feature.geometry.type === "MultiPoint") {
         fitFeatureBounds(mapRef.current, feature);
       } else {
-        console.log(
+        console.error(
           `Cannot zoom to unspported geometry type: ${feature.geomtery.type}`
         );
       }
@@ -372,7 +281,7 @@ export default function GeoList({
       setSelectedFeature(null);
     }
     setSelectedFeature(feature);
-    repaintMap(mapRef.current);
+    delayedRepaintMap(mapRef.current);
   };
 
   useConditionalOverflow(isSmallScreen, showMap);
@@ -385,13 +294,13 @@ export default function GeoList({
             <Col>
               {selectedFeature && (
                 <Row style={{ height: "75vh", overflow: "auto" }}>
-                  <DetailsThing
+                  <ListItemDetails
                     feature={selectedFeature}
                     detailsRenderer={detailsRenderer}
                     setSelectedFeature={setSelectedFeature}
                     setShowMap={setShowMap}
                     isSmallScreen={isSmallScreen}
-                    map={mapRef.current}
+                    delayedRepaintMap={delayedRepaintMap}
                   />
                 </Row>
               )}
