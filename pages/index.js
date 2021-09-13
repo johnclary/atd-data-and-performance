@@ -7,6 +7,7 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Footer from "../components/Footer";
 import Link from "next/link";
+import { IconSeparator } from "../components/Nav";
 import {
   FaClock,
   FaExclamationTriangle,
@@ -28,8 +29,7 @@ const cards = {
     },
     {
       title: "Signal Monitor",
-      description:
-        "Real-time monitoring of the City's traffic signals",
+      description: "Real-time monitoring of the City's traffic signals",
       href: "/signal-monitor",
       img: null,
       key: "signal_monitor",
@@ -37,8 +37,7 @@ const cards = {
     },
     {
       title: "Traffic Cameras",
-      description:
-        "View live images from the City's traffic cameras",
+      description: "Live images from the City's traffic cameras",
       href: "/traffic-cameras",
       img: null,
       key: "traffic_cameras",
@@ -46,8 +45,7 @@ const cards = {
     },
     {
       title: "Signal Timing",
-      description:
-        "Track the progress of our annual signal re-timing work",
+      description: "Track the progress of our annual signal re-timing work",
       href: "/signal-timing",
       img: null,
       icon: <FaClock />,
@@ -57,7 +55,7 @@ const cards = {
     {
       title: "Signal Assets",
       description:
-        "Info about signal requests where you can search and browse info.",
+        "Comprehensive map of traffig signal assets, including sensors, vehicle detectors, and school beacons.",
       href: "/not-implemented",
       img: null,
     },
@@ -125,19 +123,36 @@ export function CardItem({ href, title, description, icon }) {
 export default function Home() {
   return (
     <>
+      <Head>
+        <title>Austin Transportation Data and Performance Hub</title>
+        <meta
+          property="og:title"
+          content="Austin Transportation Data and Performance Hub"
+          key="title"
+        />
+      </Head>
       <Container>
-        <Row key="title-row">
-          <Col key="spacer-1" md={3}></Col>
-          <Col sm={12} md={9} lg={6} className="py-5 px-4 text-primary">
+        <Row key="title-row" className="justify-content-center">
+          <Col sm={12} md={6} lg={5} className="pt-5 text-primary">
             <Image
               fluid
               src="/assets/data_and_performance.jpg"
               alt="Illustration of a green bicycle"
             />
-            <p className="text-muted mt-3">
-              This page has useful info, such as dashboards, maps, and misc
-              other links to content that you may or may not find interesting.
-              Also, we have a data catalog that you can browse.
+            <IconSeparator />
+          </Col>
+        </Row>
+        <Row key="subtitle" className="justify-content-center mb-2">
+          <Col sm={12} className="text-center">
+            <p className="text-muted">
+              This site is provided by the{" "}
+              <a
+                href="https://www.austintexas.gov/department/transportation"
+                targe="_blank"
+              >
+                Austin Transportation Department
+              </a>{" "}
+              to curate access to performance dashboards and public datasets.
             </p>
           </Col>
         </Row>
@@ -158,7 +173,7 @@ export default function Home() {
         </Row>
         <Row key="row-4" className="text-dts-4 mb-4">
           {cards.maps_resources.map((card) => {
-            return <CardItem key={card.href}  {...card} />;
+            return <CardItem key={card.href} {...card} />;
           })}
         </Row>
         <Row key="row-5" className="text-dts-4">
@@ -168,7 +183,7 @@ export default function Home() {
         </Row>
         <Row key="row-6" className="text-dts-4 mb-4">
           {cards.open_data.map((card) => {
-            return <CardItem key={card.href}  {...card} />;
+            return <CardItem key={card.href} {...card} />;
           })}
         </Row>
       </Container>
