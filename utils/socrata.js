@@ -43,6 +43,8 @@ export function useSocrata({ resourceId, format, args }) {
 }
 
 export function useSocrataMetadata({ resourceId }) {
+  // also—find all datasets by atd user of type dataset
+  // https://data.austintexas.gov/api/views/metadata/v1?for_user=8t3r-wq64&only=datasets
   const url = `https://data.austintexas.gov/api/views/${resourceId}.json`;
   const { data, error } = useSWR(url, fetcher);
   return {
