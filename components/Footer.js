@@ -3,9 +3,8 @@ import { Row, Col, Container } from "react-bootstrap";
 
 export default function Footer() {
   return (
-    <Container fluid>
-      <Row className="text-primary py-3">
-        <hr className="w-100" />
+    <Container fluid className="bg-primary mt-4">
+      <Row className="text-white py-3">
         <div className="d-flex flex-wrap justify-content-center">
           <Col md={6} lg={4}>
             <Row>
