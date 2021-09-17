@@ -25,8 +25,8 @@ const renderCameraURL = (feature) => {
   );
 };
 
-const renderThumbnail = (feature) => {
-  const url = feature.properties.screenshot_address;
+const Thumbnail = ({camera_id}) => {
+  const url = `https://atd-cctv.s3.amazonaws.com/${camera_id}.jpg`
   return (
     <Image
       alt="Image from traffic camera"
@@ -39,14 +39,14 @@ const renderThumbnail = (feature) => {
   );
 };
 
-const mapOverlayConfig = {
-  titleKey: "location_name",
-  bodyKeys: [
-    { key: "ip_comm_status", label: "Status" },
-    { key: "screenshot_address", label: "Image", renderer: renderThumbnail },
-    { key: "camera_id", label: "Live feed", renderer: renderCameraURL },
-  ],
-};
+// const mapOverlayConfig = {
+//   titleKey: "location_name",
+//   bodyKeys: [
+//     { key: "ip_comm_status", label: "Status" },
+//     { key: "screenshot_address", label: "Image", renderer: renderThumbnail },
+//     { key: "camera_id", label: "Live feed", renderer: renderCameraURL },
+//   ],
+// };
 
 const STATUS_STYLES = {
   ONLINE: {
@@ -116,13 +116,10 @@ const detailsRenderer = (feature) => {
           <FlexyInfo label="Status" value={feature.properties.ip_comm_status} />
         </ListGroup.Item>
         <ListGroup.Item>
-          <FlexyInfo
-            label="Url (broken)"
-            value={feature.properties.screenshot_address}
-          />
+          <FlexyInfo label="Camera ID" value={feature.properties.camera_id} />
         </ListGroup.Item>
         <ListGroup.Item>
-          <FlexyInfo label="Camera ID" value={feature.properties.camera_id} />
+          <Thumbnail camera_id={feature.properties.camera_id}/>
         </ListGroup.Item>
       </ListGroup>
     </Col>
