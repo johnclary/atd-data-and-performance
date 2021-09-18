@@ -1,17 +1,16 @@
 import React from "react";
 import Head from "next/head";
+import Link from "next/link";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Footer from "../components/Footer";
-import Link from "next/link";
 import { IconSeparator } from "../components/Nav";
 import {
   FaClock,
   FaExclamationTriangle,
-  FaRegClock,
   FaVideo,
   FaWrench,
 } from "react-icons/fa";
@@ -137,7 +136,7 @@ export default function Home() {
             <Image
               fluid
               src="/assets/data_and_performance.jpg"
-              alt="Illustration of a green bicycle"
+              alt="Performance hub logo"
             />
             <IconSeparator />
           </Col>

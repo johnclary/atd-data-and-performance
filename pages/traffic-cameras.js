@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { Modal } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -16,24 +17,15 @@ const COLORS = {
   offline: "#757575",
 };
 
-const renderCameraURL = (feature) => {
-  console.log(feature);
-  return (
-    <a href={`http://10.66.2.64:8000/?cam_id=${feature.properties.camera_id}`}>
-      View live feed (restricted access)
-    </a>
-  );
-};
-
-const Thumbnail = ({camera_id}) => {
-  const url = `https://atd-cctv.s3.amazonaws.com/${camera_id}.jpg`
+const Thumbnail = ({ camera_id }) => {
+  const src = `https://atd-cctv.s3.amazonaws.com/${camera_id}.jpg`;
   return (
     <Image
       alt="Image from traffic camera"
       onError={() => {
         return <p>error</p>;
       }}
-      src={url}
+      src={src}
       fluid
     />
   );
@@ -101,8 +93,8 @@ const FlexyInfo = ({ label, value }) => {
   );
 };
 
-const detailsRenderer = (feature) => {
-  console.log(feature);
+const DetailsRenderer = (feature) => {
+  const [showModal, setShowModal] = useState(false);
   return (
     <Col>
       <ListGroup variant="flush">
@@ -119,7 +111,22 @@ const detailsRenderer = (feature) => {
           <FlexyInfo label="Camera ID" value={feature.properties.camera_id} />
         </ListGroup.Item>
         <ListGroup.Item>
-          <Thumbnail camera_id={feature.properties.camera_id}/>
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowModal(!showModal)}
+          >
+            <Modal size="xl" animation={true} show={showModal} keyboard={false}>
+              <Modal.Header closeButton></Modal.Header>
+              <Modal.Body>
+                <Row className="justify-content-center">
+                  <Col xs={12} className="text-center">
+                    <Thumbnail camera_id={feature.properties.camera_id} />
+                  </Col>
+                </Row>
+              </Modal.Body>
+            </Modal>
+            <Thumbnail camera_id={feature.properties.camera_id} />
+          </div>
         </ListGroup.Item>
       </ListGroup>
     </Col>

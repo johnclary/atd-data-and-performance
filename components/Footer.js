@@ -6,7 +6,7 @@ export default function Footer() {
     <Container fluid className="bg-primary mt-4">
       <Row className="text-white py-3">
         <div className="d-flex flex-wrap justify-content-center">
-          <Col md={6} lg={4}>
+          <Col md={6} lg={4} className="my-4">
             <Row>
               <Col className="text-center">
                 <h5>City of Austin Transportation Department</h5>

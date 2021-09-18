@@ -91,7 +91,7 @@ const detailsRenderer = (feature) => {
         <ListGroup.Item>
           <FlexyInfo
             label="Travel time reduced (%)"
-            value={formatPercent(feature.properties.vol_wavg_tt_pct_change)}
+            value={formatPercent(feature.properties.vol_wavg_tt_pct_change, 1)}
           />
         </ListGroup.Item>
         <ListGroup.Item>
