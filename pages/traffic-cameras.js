@@ -188,7 +188,7 @@ export default function Viewer() {
           listItemRenderer={listItemRenderer}
           filterDefs={FILTERS}
           layerStyle={POINT_LAYER_STYLE}
-          detailsRenderer={detailsRenderer}
+          detailsRenderer={DetailsRenderer}
         />
       </Container>
       <Footer />
