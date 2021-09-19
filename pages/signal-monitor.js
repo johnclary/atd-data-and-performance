@@ -177,6 +177,9 @@ const useMetricData = (data) => {
 export default function Viewer() {
   const { data, loading, error } = useSocrata(SIGNAL_STATUS_QUERY);
   const metricData = useMetricData(data);
+  
+  if (loading) return <p>Loading...</p>
+  if (error || !data) return <p>{error?.message || "something went wrong"}</p>
   return (
     <>
       <Nav />

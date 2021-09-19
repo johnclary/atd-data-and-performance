@@ -414,6 +414,8 @@ export default function Viewer() {
     });
     totalTravelTimeChange = totals.vol_wavg_tt_seconds / totals.total_vol;
   }
+
+  // todo: be better
   if (signalCorridorsRaw.error || retimingDataRaw.error)
     return (
       <>

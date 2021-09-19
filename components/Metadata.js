@@ -9,6 +9,10 @@ export const DataMetaData = ({ resourceId }) => {
   if (loading) {
     return <span>Loading...</span>;
   }
+
+  // todo: be better
+  if (error || !data) return <p>{error?.message || "something went wrong"}</p>
+
   const updatedAt = new Date(data.rowsUpdatedAt * 1000).toLocaleString();
   const downloadUrl = `https://data.austintexas.gov/dataset/Traffic-Signals-and-Pedestrian-Signals/${resourceId}`;
 
