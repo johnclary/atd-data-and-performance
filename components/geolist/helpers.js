@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import mapboxgl from "mapbox-gl";
+import { FaSlideshare } from "react-icons/fa";
 // TODO: move to build environment
 mapboxgl.accessToken =
   "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
@@ -9,7 +10,8 @@ export const MAP_OPTIONS_DEFAULT = {
   zoom: 11,
   style: "mapbox://styles/mapbox/light-v10",
   maxZoom: 18,
-  pitchWithRotate: false,
+  // touchZoomRotate: false,
+  touchPitch: false,
   dragRotate: false,
   maxBounds: [
     [-98.27, 30.05],
@@ -196,7 +198,10 @@ export const useMap = (mapContainerRef, mapRef) => {
       container: mapContainerRef.current,
       ...MAP_OPTIONS_DEFAULT,
     });
-    mapRef.current.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+    mapRef.current.addControl(
+      new mapboxgl.NavigationControl({ visualizePitch: false, showCompass: false }),
+      "bottom-right"
+    );
     mapRef.current.once("load").then(() => setIsMapLoaded(true));
     return () => mapRef.current?.remove();
   }, [mapContainerRef, mapRef]);
