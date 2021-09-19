@@ -9,7 +9,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Row from "react-bootstrap/Row";
 import Fade from "react-bootstrap/Fade";
 import { BsSearch } from "react-icons/bs";
-import { FaCaretDown, FaCaretUp, FaMapMarkerAlt } from "react-icons/fa";
+import { FaCaretDown, FaCaretUp, FaMapMarkerAlt, FaChevronLeft } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import List from "./List";
 import Map from "./Map";
@@ -196,8 +196,8 @@ const ListItemDetails = ({
       <Col>
         <Row>
           <Col>
-            <Button size="sm" onClick={() => setSelectedFeature(null)}>
-              {"< Back to list"}
+            <Button size="sm" variant="outline-dts-4" onClick={() => setSelectedFeature(null)}>
+              <FaChevronLeft/> Back to list
             </Button>
           </Col>
           {isSmallScreen && (
