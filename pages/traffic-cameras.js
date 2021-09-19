@@ -160,7 +160,7 @@ const FILTERS = {
       value: "OFFLINE",
       featureProp: "ip_comm_status",
       label: "Offline",
-      checked: true,
+      checked: false,
     },
   ],
   search: {
