@@ -174,7 +174,7 @@ export const easeToPointFeature = (map, feature) => {
   const coordinates = feature.geometry.coordinates;
   map.easeTo({
     center: coordinates,
-    zoom: 13,
+    zoom: 15,
     duration: 1000,
   });
 };
