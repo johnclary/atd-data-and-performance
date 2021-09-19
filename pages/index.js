@@ -22,7 +22,6 @@ const cards = [
     description:
       "Get the latest info about active and upcoming traffic signal construction",
     href: "/signal-projects",
-    img: { src: "/assets/data_and_performance.jpg", alt: "DTS logo" },
     key: "signal_projects",
     icon: <FaWrench />,
   },
