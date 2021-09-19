@@ -81,7 +81,7 @@ export const SIGNAL_STATUS_QUERY = {
     },
     {
       key: "order",
-      value: "location_name asc",
+      value: "operation_state asc, location_name asc",
     },
     {
       key: "where",
