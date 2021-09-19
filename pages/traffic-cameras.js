@@ -22,8 +22,9 @@ const Thumbnail = ({ camera_id }) => {
   return (
     <Image
       alt="Image from traffic camera"
-      onError={() => {
-        return <p>error</p>;
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = "/assets/unavailable.jpg";
       }}
       src={src}
       fluid
@@ -102,10 +103,12 @@ const DetailsRenderer = (feature) => {
           <span className="fs-4 fw-bold me-2">
             {feature.properties.location_name}
           </span>
-          <span className="text-muted fst-italic">cool info!</span>
         </ListGroup.Item>
         <ListGroup.Item>
-          <FlexyInfo label="Status" value={feature.properties.ip_comm_status} />
+          <FlexyInfo
+            label="Status"
+            value={renderCameraCommStatus(feature.properties.ip_comm_status)}
+          />
         </ListGroup.Item>
         <ListGroup.Item>
           <FlexyInfo label="Camera ID" value={feature.properties.camera_id} />
@@ -174,8 +177,8 @@ const FILTERS = {
 
 export default function Viewer() {
   const { data, loading, error } = useSocrata(TRAFFIC_CAMERAS_QUERY);
-  if (loading) return <p>Loading...</p>
-  if (error || !data) return <p>{error?.message || "something went wrong"}</p>
+  if (loading) return <p>Loading...</p>;
+  if (error || !data) return <p>{error?.message || "something went wrong"}</p>;
   return (
     <>
       <Nav />
@@ -185,6 +188,7 @@ export default function Viewer() {
             <h2 className="text-primary">Traffic Cameras</h2>
           </Col>
         </Row>
+        <DataMetaData resourceId={TRAFFIC_CAMERAS_QUERY.resourceId} />
         <GeoList
           geojson={data}
           listItemRenderer={listItemRenderer}
