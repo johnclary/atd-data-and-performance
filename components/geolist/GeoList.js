@@ -9,7 +9,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Row from "react-bootstrap/Row";
 import Fade from "react-bootstrap/Fade";
 import { BsSearch } from "react-icons/bs";
-import { FaCaretDown, FaCaretUp, FaMapMarkerAlt, FaChevronLeft } from "react-icons/fa";
+import { FaCaretDown, FaCaretUp, FaMapMarkerAlt, FaChevronLeft, FaTimes } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import List from "./List";
 import Map from "./Map";
@@ -289,7 +289,7 @@ export default function GeoList({
   return (
     <>
       <Row>
-        <Col xs={12} md={4}>
+        <Col xs={12} lg={4}>
           <Row style={{ height: "75vh", overflow: "hidden" }}>
             <Col>
               {selectedFeature && (
@@ -349,7 +349,7 @@ export default function GeoList({
         {isSmallScreen && (
           <MapModal showMap={showMap} setShowMap={setShowMap}>
             <Button
-              className="btn-outline-primary bg-white"
+              className="btn-dts-4"
               style={{
                 zIndex: 99999999,
                 position: "absolute",
@@ -361,7 +361,7 @@ export default function GeoList({
                 setShowMap(false);
               }}
             >
-              Close map
+              <FaTimes/> Close
             </Button>
             <Map
               geojson={filteredGeosjon}
