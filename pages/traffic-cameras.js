@@ -174,6 +174,8 @@ const FILTERS = {
 
 export default function Viewer() {
   const { data, loading, error } = useSocrata(TRAFFIC_CAMERAS_QUERY);
+  if (loading) return <p>Loading...</p>
+  if (error || !data) return <p>{error?.message || "something went wrong"}</p>
   return (
     <>
       <Nav />
