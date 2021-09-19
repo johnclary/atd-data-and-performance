@@ -38,7 +38,7 @@ const cards = [
     title: "Traffic Cameras",
     description: "Live images from the City's traffic cameras",
     href: "/traffic-cameras",
-    img: {src: "/assets/cctv-enhance.jpg", alt:"Traffic camera thumbnail"},
+    img: {src: "/assets/cctv.jpg", alt:"Traffic camera thumbnail"},
     key: "traffic_cameras",
     icon: <FaVideo />,
   },
