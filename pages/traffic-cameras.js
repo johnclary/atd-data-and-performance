@@ -18,7 +18,7 @@ const COLORS = {
 };
 
 const Thumbnail = ({ camera_id }) => {
-  const src = `https://atd-cctv.s3.amazonaws.com/${camera_id}.jpg`;
+  const src = `https://cctv.austinmobility.io/${camera_id}.jpg`;
   return (
     <Image
       alt="Image from traffic camera"
