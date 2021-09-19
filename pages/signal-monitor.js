@@ -1,9 +1,9 @@
 import React from "react";
-import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { ListGroup } from "react-bootstrap";
+import { FaExclamationTriangle, FaClock, FaPhone } from "react-icons/fa";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
@@ -11,30 +11,45 @@ import { DataMetaData } from "../components/Metadata";
 import { useSocrata } from "../utils/socrata.js";
 import { SIGNAL_STATUS_QUERY } from "../components/queries";
 
+const COLORS = {
+  red: "#e41a1c",
+  lightRed: "#e05557",
+  orange: "#ff7f00",
+  lightOrange: "#ffa54d",
+  blue: "#377eb8",
+  lightBlue: "#578eba",
+};
+
 const OPERATION_STATES = [
-  {
-    key: "scheduled_flash",
-    value: "1",
-    label: "Scheduled Flash",
-    color: "#d95f02",
-    featureProp: "operation_state",
-    checked: true,
-  },
   {
     key: "unscheduled_flash",
     value: "2",
     label: "Unscheduled Flash",
-    color: "#7570b3",
+    color: COLORS.red,
+    backgroundColor: COLORS.lightRed,
     featureProp: "operation_state",
     checked: true,
+    icon: FaExclamationTriangle,
+  },
+  {
+    key: "scheduled_flash",
+    value: "1",
+    label: "Scheduled Flash",
+    color: COLORS.orange,
+    backgroundColor: COLORS.lightOrange,
+    featureProp: "operation_state",
+    checked: true,
+    icon: FaClock,
   },
   {
     key: "comm_outage",
     value: "3",
     label: "Comm Outage",
-    color: "#1b9e77",
+    color: COLORS.blue,
+    backgroundColor: COLORS.lightBlue,
     featureProp: "operation_state",
     checked: true,
+    icon: FaPhone,
   },
 ];
 
@@ -58,13 +73,15 @@ const listItemRenderer = (feature) => {
       <p key="title" className="fw-bold my-0">
         <small>{feature.properties.location_name}</small>
       </p>
-      <p key="body" className="my-0">
-        <small>
+      <div className="d-flex w-100 justify-content-end">
+        <p key="body" className="my-0">
           <small>
-            {renderOperationState(feature.properties.operation_state)}
+            <small>
+              {renderOperationState(feature.properties.operation_state)}
+            </small>
           </small>
-        </small>
-      </p>
+        </p>
+      </div>
     </>
   );
 };
@@ -72,12 +89,12 @@ const listItemRenderer = (feature) => {
 const FlexyInfo = ({ label, value }) => {
   return (
     <div className="d-flex w-100 justify-content-between">
-      <p className="fw-bold my-0">
+      <span className="fw-bold">
         <small>{label}</small>
-      </p>
-      <p className="my-0">
+      </span>
+      <span>
         <small>{value}</small>
-      </p>
+      </span>
     </div>
   );
 };
@@ -87,10 +104,9 @@ const detailsRenderer = (feature) => {
     <Col>
       <ListGroup variant="flush">
         <ListGroup.Item>
-          <span className="fs-4 fw-bold me-2">
+          <span className="fs-4 fw-bold">
             {feature.properties.location_name}
           </span>
-          <span className="text-muted fst-italic">cool info!</span>
         </ListGroup.Item>
         <ListGroup.Item>
           <FlexyInfo
@@ -142,16 +158,27 @@ const FILTERS = {
   },
 };
 
-export function CardItem({ title, value }) {
+const Metric = ({ title, value, backgroundColor, icon: Icon }) => {
   return (
-    <Card className="h-100 shadow-sm pb-2 text-center">
-      <Card.Body>
-        <h5 className="text-dts-4">{title}</h5>
-        <h3 className="text-dts-6">{value}</h3>
-      </Card.Body>
-    </Card>
+    <>
+      <h4 className="text-primary text-center">
+        <Icon /> {title}{" "}
+      </h4>
+      <h4 className="text-center">
+        <span
+          className="my-0 font-monospace"
+          style={
+            value
+              ? { backgroundColor: backgroundColor, color: "#fff" }
+              : { color: "#6c757d" }
+          }
+        >
+          {<small className="mx-2">{value}</small>}
+        </span>
+      </h4>
+    </>
   );
-}
+};
 
 /**
  * Calculates count of signals by status type
@@ -163,6 +190,12 @@ const useMetricData = (data) => {
 
   React.useEffect(() => {
     if (!data) return;
+    // for development: uncomment to mock data for all states
+    // data.features[0].properties.operation_state = "2";
+    // data.features[1].properties.operation_state = "1";
+    // data.features[2].properties.operation_state = "1";
+    // data.features[3].properties.operation_state = "1";
+    // data.features[4].properties.operation_state = "3";
     let currentData = {};
     data.features.forEach((feature) => {
       let operationState = feature.properties.operation_state;
@@ -177,9 +210,10 @@ const useMetricData = (data) => {
 export default function Viewer() {
   const { data, loading, error } = useSocrata(SIGNAL_STATUS_QUERY);
   const metricData = useMetricData(data);
-  
-  if (loading) return <p>Loading...</p>
-  if (error || !data) return <p>{error?.message || "something went wrong"}</p>
+
+  if (loading) return <p>Loading...</p>;
+  if (error || !data) return <p>{error?.message || "something went wrong"}</p>;
+
   return (
     <>
       <Nav />
@@ -189,13 +223,15 @@ export default function Viewer() {
             <h2 className="text-primary">Traffic Signal Monitor</h2>
           </Col>
         </Row>
-        <Row key="metrics">
+        <Row key="metrics" className="justify-content-lg-center mb-2">
           {OPERATION_STATES.map((opState) => {
             return (
-              <Col key={opState.key} className="pb-2">
-                <CardItem
+              <Col key={opState.key} xs={12} lg={4}>
+                <Metric
                   title={opState.label}
                   value={metricData[opState.value] || 0}
+                  icon={opState.icon}
+                  backgroundColor={opState.backgroundColor}
                 />
               </Col>
             );
