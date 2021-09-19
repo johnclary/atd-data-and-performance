@@ -15,6 +15,7 @@ import {
   FaWrench,
 } from "react-icons/fa";
 
+// image size: 960 x 491px
 const cards = [
   {
     title: "Signal Projects",
@@ -37,7 +38,7 @@ const cards = [
     title: "Traffic Cameras",
     description: "Live images from the City's traffic cameras",
     href: "/traffic-cameras",
-    img: null,
+    img: {src: "/assets/cctv-enhance.jpg", alt:"Traffic camera thumbnail"},
     key: "traffic_cameras",
     icon: <FaVideo />,
   },
@@ -45,7 +46,7 @@ const cards = [
     title: "Signal Timing",
     description: "Track the progress of our annual signal re-timing work",
     href: "/signal-timing",
-    img: null,
+    img: {src: "/assets/signal-timing.jpg", alt:"Signal timing dashboard"},
     icon: <FaClock />,
   },
 
@@ -94,12 +95,13 @@ const cards = [
   },
 ];
 
-export function CardItem({ href, title, description, icon }) {
+export function CardItem({ href, title, description, icon, img }) {
   return (
     <Col key={href} xs={12} md={4} lg={3} className="pb-3">
       <Link className="text-primary text-decoration-none" href={href} passHref>
         <div style={{ cursor: "pointer", height: "100%" }}>
           <Card style={{ borderRadius: 15 }} className="h-100 shadow-sm">
+            {img && <Card.Img variant="top" alt={img.alt} src={img.src} />}
             <Card.Body>
               <Card.Title className="text-primary">
                 {icon} {title}
