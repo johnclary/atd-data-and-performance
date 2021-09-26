@@ -20,7 +20,7 @@ const COLORS = {
 
 const Thumbnail = ({ camera_id }) => {
   const [loading, setLoading] = useState(true);
-  const src = `https://cctv.austinmobility.io/image/${camera_id}`;
+  const src = `https://cctv.austinmobility.io/image/${camera_id}.jpg`;
   return (
     <>
       {loading && (
