@@ -109,7 +109,7 @@ const DetailsRenderer = (feature) => {
     <Col>
       <ListGroup variant="flush">
         <ListGroup.Item>
-          <span className="fs-4 fw-bold me-2">
+          <span className="fs-5 fw-bold me-2">
             {feature.properties.location_name}
           </span>
         </ListGroup.Item>
