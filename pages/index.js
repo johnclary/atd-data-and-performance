@@ -37,7 +37,7 @@ const cards = [
     title: "Traffic Cameras",
     description: "Live images from the City's traffic cameras",
     href: "/traffic-cameras",
-    img: {src: "/assets/cctv.jpg", alt:"Traffic camera thumbnail"},
+    img: { src: "/assets/cctv.jpg", alt: "Traffic camera thumbnail" },
     key: "traffic_cameras",
     icon: <FaVideo />,
   },
@@ -45,7 +45,7 @@ const cards = [
     title: "Signal Timing",
     description: "Track the progress of our annual signal re-timing work",
     href: "/signal-timing",
-    img: {src: "/assets/signal-timing.jpg", alt:"Signal timing dashboard"},
+    img: { src: "/assets/signal-timing.jpg", alt: "Signal timing dashboard" },
     icon: <FaClock />,
   },
 
