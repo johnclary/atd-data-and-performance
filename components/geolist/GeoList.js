@@ -8,8 +8,15 @@ import Modal from "react-bootstrap/Modal";
 import Navbar from "react-bootstrap/Navbar";
 import Row from "react-bootstrap/Row";
 import Fade from "react-bootstrap/Fade";
+import { CloseButton } from "react-bootstrap";
 import { BsSearch } from "react-icons/bs";
-import { FaCaretDown, FaCaretUp, FaMapMarkerAlt, FaChevronLeft, FaTimes } from "react-icons/fa";
+import {
+  FaCaretDown,
+  FaCaretUp,
+  FaMapMarkerAlt,
+  FaChevronLeft,
+  FaTimes,
+} from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import List from "./List";
 import Map from "./Map";
@@ -72,7 +79,7 @@ const CheckBoxFilters = ({ filters, setFilters }) => {
             label={f.label}
             checked={f.checked}
             onChange={() => onChange(f)}
-            className="text-dts-primary"
+            className="text-primary"
           />
         </div>
       ))}
@@ -195,15 +202,13 @@ const ListItemDetails = ({
     <Fade in={open}>
       <Col>
         <Row>
-          <Col>
-            <Button size="sm" variant="outline-dts-4" onClick={() => setSelectedFeature(null)}>
-              <FaChevronLeft/> Back to list
-            </Button>
+          <Col className="text-end">
+            <CloseButton className="" onClick={() => setSelectedFeature(null)}/>
           </Col>
           {isSmallScreen && (
             <Col xs="auto">
               <Button
-                variant="outline-dts-4"
+                variant="outline-primary"
                 size="sm"
                 onClick={() => {
                   setShowMap(true);
@@ -349,7 +354,7 @@ export default function GeoList({
         {isSmallScreen && (
           <MapModal showMap={showMap} setShowMap={setShowMap}>
             <Button
-              className="btn-dts-4"
+              className="btn-primary"
               style={{
                 zIndex: 99999999,
                 position: "absolute",
@@ -361,7 +366,7 @@ export default function GeoList({
                 setShowMap(false);
               }}
             >
-              <FaTimes/> Close
+              <FaTimes /> Close
             </Button>
             <Map
               geojson={filteredGeosjon}

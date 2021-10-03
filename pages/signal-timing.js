@@ -434,7 +434,7 @@ export default function Viewer() {
         <Row>
           <Col xs={12} md={4}>
             <h2 className="text-primary">Signal Timing</h2>
-            <p className="text-primary">
+            <p className="text-dts-dark-gray">
               This dashboard reports the progress of the Austin Transportation
               Department&aposs Annual Signal Timing Program. Beginning in 2017,
               traffic signal engineers will re-time approximately 1/3 of the
@@ -450,7 +450,7 @@ export default function Viewer() {
             <Row>
               <Col xs={12} md={4} lg={3} xl={2} className="mx-auto">
                 <InputGroup>
-                  <Form.Label className="text-primary my-auto me-2">
+                  <Form.Label className="text-dts-dark-gray my-auto me-2">
                     Year
                   </Form.Label>
                   <Form.Select
@@ -471,11 +471,11 @@ export default function Viewer() {
             </Row>
             <Row>
               <Col xs={12} md={6} className="text-center">
-                <h5 className="text-primary">Signals Re-Timed</h5>
+                <h5 className="text-dts-dark-gray">Signals Re-Timed</h5>
                 <ProgressChart summaryStats={summaryStats} />
               </Col>
               <Col xs={12} md={6} className="text-center">
-                <h5 className="text-primary">Travel Time Reduced</h5>
+                <h5 className="text-dts-dark-gray">Travel Time Reduced</h5>
                 <span style={{ fontSize: "52px" }}>
                   {formatPercent(totalTravelTimeChange || 0, 1)}
                 </span>

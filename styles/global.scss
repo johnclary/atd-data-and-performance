@@ -8,6 +8,7 @@
 $theme-colors: (
     "primary": #0b3e79,
     "secondary": #00bfa5,
+    "dts-dark-gray": #495056,
     "dts-1": #5f7d8c,
     "dts-2": #86b1c6,
     "dts-3": #162b4c,
@@ -23,6 +24,10 @@ body {
     font-family: IBM Plex Sans, sans-serif !important;
 }
 
+.card:hover {
+    box-shadow: 4px 4px 4px 1px gainsboro !important;
+}
+
 .form-check-input:checked {
     background-color: theme-color("primary") !important;
     border-color: theme-color("dts-4") !important;
@@ -36,7 +41,7 @@ body {
 #filter-button-toggle {
     color: #fff !important;
     font-size: 1em;
-    background-color: theme-color("dts-4") !important;
+    background-color: theme-color("primary") !important;
 }
 
 .react-date-picker__wrapper {
@@ -57,7 +62,6 @@ body {
 
 .status-badge {
     border-radius: 8px;
-    // box-shadow: 1px 1px #888888;
     border-style: solid;
     border-width: 1px;
     padding-top: 3px;

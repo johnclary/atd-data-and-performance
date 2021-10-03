@@ -4,7 +4,8 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Image from "react-bootstrap/Image";
-import Spinner from "react-bootstrap/Spinner";
+import { Spinner as BsSpinner } from "react-bootstrap";
+import { Spinner } from "../components/Spinner";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
@@ -24,7 +25,11 @@ const Thumbnail = ({ camera_id }) => {
   return (
     <>
       {loading && (
-        <Spinner className="text-secondary" animation="border" role="status" />
+        <BsSpinner
+          className="text-secondary"
+          animation="border"
+          role="status"
+        />
       )}
       <Image
         className={loading ? "d-none" : ""}
@@ -92,8 +97,8 @@ const listItemRenderer = (feature) => {
 
 const FlexyInfo = ({ label, value }) => {
   return (
-    <div className="d-flex w-100 justify-content-between">
-      <p className="fw-bold my-0">
+    <div className="d-flex w-100 justify-content-between text-dts-dark-gray">
+      <p className="my-0">
         <small>{label}</small>
       </p>
       <p className="my-0">
@@ -103,14 +108,19 @@ const FlexyInfo = ({ label, value }) => {
   );
 };
 
+const better = (str) => {
+  let [name, landmark] = str.split("(")
+  return `${name}`
+
+}
 const DetailsRenderer = (feature) => {
   const [showModal, setShowModal] = useState(false);
   return (
     <Col>
       <ListGroup variant="flush">
-        <ListGroup.Item>
+        <ListGroup.Item className="text-dts-dark-gray">
           <span className="fs-5 fw-bold me-2">
-            {feature.properties.location_name}
+            {better(feature.properties.location_name)}
           </span>
         </ListGroup.Item>
         <ListGroup.Item>
@@ -195,7 +205,7 @@ const FILTERS = {
 
 export default function Viewer() {
   const { data, loading, error } = useSocrata(TRAFFIC_CAMERAS_QUERY);
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Spinner />;
   if (error || !data) return <p>{error?.message || "something went wrong"}</p>;
   return (
     <>

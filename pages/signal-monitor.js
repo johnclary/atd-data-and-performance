@@ -4,6 +4,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { ListGroup } from "react-bootstrap";
 import { FaExclamationTriangle, FaClock, FaPhone } from "react-icons/fa";
+import { Spinner } from "../components/Spinner";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
@@ -70,7 +71,7 @@ const renderOperationState = (inputOpState) => {
 const listItemRenderer = (feature) => {
   return (
     <>
-      <p key="title" className="fw-bold my-0">
+      <p key="title" className="fw-bold my-0 text-dts-dark-gray">
         <small>{feature.properties.location_name}</small>
       </p>
       <div className="d-flex w-100 justify-content-end">
@@ -88,8 +89,8 @@ const listItemRenderer = (feature) => {
 
 const FlexyInfo = ({ label, value }) => {
   return (
-    <div className="d-flex w-100 justify-content-between">
-      <span className="fw-bold">
+    <div className="d-flex w-100 justify-content-between text-dts-dark-gray">
+      <span>
         <small>{label}</small>
       </span>
       <span>
@@ -104,7 +105,7 @@ const detailsRenderer = (feature) => {
     <Col>
       <ListGroup variant="flush">
         <ListGroup.Item>
-          <span className="fs-4 fw-bold">
+          <span className="fs-5 fw-bold text-dts-dark-gray">
             {feature.properties.location_name}
           </span>
         </ListGroup.Item>
@@ -161,9 +162,9 @@ const FILTERS = {
 const Metric = ({ title, value, backgroundColor, icon: Icon }) => {
   return (
     <>
-      <h4 className="text-primary text-center">
+      <h5 className="text-dts-dark-gray text-center">
         <Icon /> {title}{" "}
-      </h4>
+      </h5>
       <h4 className="text-center">
         <span
           className="my-0 font-monospace"
@@ -211,7 +212,7 @@ export default function Viewer() {
   const { data, loading, error } = useSocrata(SIGNAL_STATUS_QUERY);
   const metricData = useMetricData(data);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Spinner />;
   if (error || !data) return <p>{error?.message || "something went wrong"}</p>;
 
   return (
@@ -250,9 +251,9 @@ export default function Viewer() {
             <h4>About the Traffic Signal Monitor</h4>
           </Col>
         </Row>
-        <Row key="about-content" className="text-primary">
+        <Row key="about-content" className="text-dts-dark-gray">
           <Col key="col-1">
-            <h5 className="text-dts-4">What am I Looking at?</h5>
+            <h5>What am I Looking at?</h5>
             <p>
               This dashboard reports the operation status of traffic signals in
               Austin, TX. Traffic signals enter flash mode when something is
@@ -263,7 +264,7 @@ export default function Viewer() {
             </p>
           </Col>
           <Col key="col-2">
-            <h5 className="text-dts-4">Advanced Transportation Management</h5>
+            <h5>Advanced Transportation Management</h5>
             <p>
               All of the City’s signals communicate with our Advanced
               Transportation Management System. When these signals go on flash,
@@ -274,7 +275,7 @@ export default function Viewer() {
             </p>
           </Col>
           <Col key="col-3">
-            <h5 className="text-dts-4">Report an Issue</h5>
+            <h5>Report an Issue</h5>
             <p>
               To report an issue or request a new traffic signal, call 3-1-1.
               You can also{" "}

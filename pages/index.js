@@ -13,6 +13,7 @@ import {
   FaExclamationTriangle,
   FaVideo,
   FaWrench,
+  FaBicycle
 } from "react-icons/fa";
 
 // image size: 960 x 491px
@@ -29,7 +30,7 @@ const cards = [
     title: "Signal Monitor",
     description: "Real-time monitoring of the City's traffic signals",
     href: "/signal-monitor",
-    img: null,
+    img: { src: "/assets/signal-monitor.jpg", alt: "Signal monitor dashboard" },
     key: "signal_monitor",
     icon: <FaExclamationTriangle />,
   },
@@ -53,43 +54,36 @@ const cards = [
     title: "Signal Assets",
     description:
       "Comprehensive map of traffig signal assets, including sensors, vehicle detectors, and school beacons.",
-    href: "/not-implemented",
-    img: null,
+    href: "https://austin.maps.arcgis.com/apps/webappviewer/index.html?id=c9bda776b1934e439285570b29d3259c",
+    img: { src: "/assets/signal-assets.jpg", alt: "Signal asset map" },
   },
-  {
-    title: "Signs & Markings",
-    description:
-      "Info about signal requests where you can search and browse info.",
-    href: "/not-implemented-2",
-    img: null,
-  },
-  {
-    title: "Preventative Maintenance",
-    description:
-      "Info about signal requests where you can search and browse info.",
-    href: "/not-implemented-3",
-    img: null,
-  },
-
   {
     title: "Shared Micromobility",
     description:
       "Info about signal requests where you can search and browse info.",
     href: "/micromobility-data",
-    img: null,
+    img: { src: "/assets/micromobility.jpg", alt: "Micromobility dashboard" },
+  },
+  {
+    title: "Vision Zero Viewer",
+    description:
+      "View crash data by month, year, mode, demographics, time of day, and location",
+    href: "https://visionzero.austin.gov/viewer/",
+    img: { src: "/assets/vz.jpg", alt: "Vision Zero Viewer" },
+  },
+  {
+    title: "Bicycle Map",
+    description:
+      "Our citywide map of bicycle routes",
+    href: "https://www.arcgis.com/apps/webappviewer/index.html?id=c7fecf32a2d946fabdf062285d58d40c",
+    img: { src: "/assets/bike-map.jpg", alt: "Bicycle map" },
+    icon: <FaBicycle />,
   },
   {
     title: "Data Catalog",
     description:
       "Info about signal requests where you can search and browse info.",
     href: "/data-catalog",
-    img: null,
-  },
-  {
-    title: "City of Austin Github",
-    description:
-      "Info about signal requests where you can search and browse info.",
-    href: "/not-implemented-5",
     img: null,
   },
 ];

@@ -123,12 +123,10 @@ export const SIGNAL_LOCATIONS_QUERY = {
     },
     {
       key: "select",
-      value: "atd_location_id,location", 
+      value: "atd_location_id,location",
     },
   ],
 };
-
-
 
 // static query substrings
 const tripSelectorsQuery =
@@ -160,12 +158,35 @@ export const MICROMOBILITY_DEVICE_COUNT_QUERY = {
 };
 
 export const MICROMOBILITY_311_QUERY = {
-  resourceId: "5h38-fd8d",
+  resourceId: "xwdj-i9he",
   format: "json",
   args: [
     {
       key: "query",
-      value: `SELECT count(sr_type_code) as count WHERE sr_created_date BETWEEN '$startDate' AND '$endDate' AND sr_type_code == "DOCKMOBI"`,
+      value: `SELECT count(sr_type_desc) WHERE sr_created_date between '$startDate' AND '$endDate' AND (contains(upper(\`sr_type_desc\`), upper('dockless')))`,
+    },
+  ],
+};
+
+export const MICROMOBILITY_TRIPS_BY_DAY_QUERY = {
+  resourceId: "7d8e-dm7r",
+  format: "json",
+  args: [
+    {
+      key: "query",
+      value: `SELECT date_trunc_ymd(start_time) as date, count(trip_id) as count where start_time BETWEEN '$startDate' AND '$endDate' AND ${tripFiltersQuery} group by date order by date asc`,
+    },
+  ],
+};
+
+
+export const MICROMOBILITY_TRIPS_BY_DAY_BY_MODE_QUERY = {
+  resourceId: "7d8e-dm7r",
+  format: "json",
+  args: [
+    {
+      key: "query",
+      value: `SELECT date_trunc_ymd(start_time) as date, count(trip_id) as count, vehicle_type where start_time BETWEEN '$startDate' AND '$endDate' AND ${tripFiltersQuery} group by date, vehicle_type order by date asc`,
     },
   ],
 };

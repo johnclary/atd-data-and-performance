@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Spinner from "react-bootstrap/Spinner";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/global.scss";
+import { Spinner } from "../components/Spinner";
 
 function App({ Component, pageProps }) {
   const router = useRouter();
@@ -29,10 +29,7 @@ function App({ Component, pageProps }) {
 
   if (isRouting)
     return (
-      <div style={{ position: "absolute", top: "40%", left: "45%" }}>
-        <Spinner className="text-secondary" animation="border" role="status" />
-        <span className="ms-2 align-top text-primary">Loading...</span>
-      </div>
+      <Spinner/>
     );
   return <Component {...pageProps} />;
 }
