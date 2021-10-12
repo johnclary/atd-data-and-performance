@@ -161,8 +161,10 @@ const listItemRenderer = (feature) => {
         <small>{feature.properties.location_name}</small>
       </p>
       <div className="d-flex w-100 justify-content-end align-items-center">
-        {Icon && <Icon className="me-1" />}
-        <span>{feature.properties.location_status_simple}</span>
+        {Icon && <Icon className="me-1 text-muted" />}
+        <span className="text-muted">
+          <small>{feature.properties.location_status_simple}</small>
+        </span>
       </div>
     </>
   );
@@ -266,10 +268,10 @@ export default function Viewer() {
               <FaCheckSquare className="me-1 text-secondary" /> Recommendation
             </h6>
             <p>
-              The evaluation process concludes with an engineer&apos;s recommendation
-              to construct a traffic or pedestrain signal. If signalization is
-              recommended, the City may proceed to construct a signal at the
-              location.
+              The evaluation process concludes with an engineer&apos;s
+              recommendation to construct a traffic or pedestrain signal. If
+              signalization is recommended, the City may proceed to construct a
+              signal at the location.
             </p>
           </Col>
           <Col xs={2}>
