@@ -92,15 +92,6 @@ const DetailsRenderer = (feature) => {
           <FlexyInfo label="Camera ID" value={feature.properties.camera_id} />
         </ListGroup.Item>
         <ListGroup.Item>
-          <a
-            href={`http://10.66.2.64:8000/?cam_id=${feature.properties.camera_id}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Live feed (restricted access)
-          </a>
-        </ListGroup.Item>
-        <ListGroup.Item>
           <div
             style={{ cursor: "pointer" }}
             onClick={() => setShowModal(!showModal)}
@@ -117,6 +108,18 @@ const DetailsRenderer = (feature) => {
             </Modal>
             <Thumbnail camera_id={feature.properties.camera_id} />
           </div>
+        </ListGroup.Item>
+        <ListGroup.Item>
+          <small>
+            <a
+              href={`http://10.66.2.64:8000/?cam_id=${feature.properties.camera_id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Live stream
+            </a>{" "}
+            (Restricted Access)
+          </small>
         </ListGroup.Item>
       </ListGroup>
     </Col>
