@@ -1,27 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
-import Modal from "react-bootstrap/Modal";
-import Navbar from "react-bootstrap/Navbar";
-import Row from "react-bootstrap/Row";
-import Fade from "react-bootstrap/Fade";
-import { CloseButton } from "react-bootstrap";
-import { BsSearch } from "react-icons/bs";
-import {
-  FaCaretDown,
-  FaCaretUp,
-  FaMapMarkerAlt,
-  FaChevronLeft,
-  FaTimes,
-} from "react-icons/fa";
+import React, { useRef, useState } from "react";
+import { Row, Col, Modal, Button } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
+import { FaTimes } from "react-icons/fa";
 import List from "./List";
 import Map from "./Map";
-import { easeToPointFeature, fitFeatureBounds } from "./helpers";
+import ListSearch from "./ListSearch";
+import ListItemDetails from "./ListItemDetails";
 import {
+  easeToPointFeature,
+  fitFeatureBounds,
   useFilteredGeojson,
   useSelectedFeatureEffect,
   useConditionalOverflow,
@@ -46,111 +33,6 @@ import {
   - The UX will not be great if you opt to render more than two or three table columns. Use the map overlay
     to display additional data.
 */
-
-const CheckBoxFilters = ({ filters, setFilters }) => {
-  const onChange = (filter) => {
-    let currentFilters = { ...filters };
-    currentFilters.checkbox.some((f) => {
-      if (f.key == filter.key) {
-        f.checked = !f.checked;
-        return true;
-      }
-    });
-    // force all checkboxes to be checked if none are. prevents user from enabling all, resulting in a blank map
-    if (
-      currentFilters.checkbox.every((f) => {
-        return !f.checked;
-      })
-    ) {
-      currentFilters.checkbox.forEach((f) => {
-        f.checked = true;
-      });
-    }
-    setFilters(currentFilters);
-  };
-
-  return (
-    <Form>
-      {filters.checkbox.map((f) => (
-        <div key={f.key}>
-          <Form.Check
-            type="switch"
-            id={f.key}
-            label={f.label}
-            checked={f.checked}
-            onChange={() => onChange(f)}
-            className="text-primary"
-          />
-        </div>
-      ))}
-    </Form>
-  );
-};
-
-/**
- * A styled button for the filter toggle. All props are passed to the
- * react-bootstrap Button component
- **/
-const FilterButton = (props) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  return (
-    <Button
-      id="filter-button-toggle"
-      {...props}
-      onClick={() => {
-        props.onClick();
-        setIsExpanded(!isExpanded);
-      }}
-    >
-      Filter
-      {!isExpanded ? <FaCaretDown /> : <FaCaretUp />}
-    </Button>
-  );
-};
-
-const TableSearch = ({ filters, setFilters, setSelectedFeature }) => {
-  const handleChange = (e) => {
-    // remove the selected feature when typing in search box
-    // ensures map marker is removed as features are filtered
-    setSelectedFeature(null);
-    let currentFilters = { ...filters };
-    currentFilters.search.value = e.target.value;
-    setFilters(currentFilters);
-  };
-  return (
-    <>
-      <Navbar expand="xs" className="py-0">
-        <Container fluid className="px-0">
-          <InputGroup className="mb-1">
-            <InputGroup.Text id="basic-addon1">
-              <BsSearch />
-            </InputGroup.Text>
-            <Form.Control
-              size="sm"
-              key={filters.search.key}
-              name={filters.search.label}
-              type="search"
-              placeholder={filters.search.placeholder}
-              onChange={handleChange}
-            />
-            {filters.checkbox && (
-              <Navbar.Toggle
-                as={FilterButton}
-                aria-controls="basic-navbar-nav"
-              />
-            )}
-          </InputGroup>
-
-          {filters.checkbox && (
-            <Navbar.Collapse timeout={100} id="basic-navbar-nav">
-              <CheckBoxFilters filters={filters} setFilters={setFilters} />
-            </Navbar.Collapse>
-          )}
-        </Container>
-      </Navbar>
-    </>
-  );
-};
 
 /**
  * A fullscreen modal into which the map is rendered.
@@ -181,51 +63,6 @@ function MapModal({ showMap, setShowMap, children }) {
   );
 }
 
-const ListItemDetails = ({
-  detailsRenderer,
-  feature,
-  setSelectedFeature,
-  setShowMap,
-  isSmallScreen,
-  delayedRepaintMap,
-}) => {
-  const [open, setIsOpen] = useState(false);
-
-  // Delay fade effect to ensure it's visibile
-  useEffect(() => {
-    setTimeout(() => {
-      setIsOpen(true);
-    }, 100);
-  }, []);
-
-  return (
-    <Fade in={open}>
-      <Col>
-        <Row>
-          <Col className="text-end">
-            <CloseButton className="" onClick={() => setSelectedFeature(null)}/>
-          </Col>
-          {isSmallScreen && (
-            <Col xs="auto">
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => {
-                  setShowMap(true);
-                  delayedRepaintMap();
-                }}
-              >
-                <FaMapMarkerAlt /> Map
-              </Button>
-            </Col>
-          )}
-        </Row>
-        <Row>{detailsRenderer(feature)}</Row>
-      </Col>
-    </Fade>
-  );
-};
-
 export default function GeoList({
   geojson,
   listItemRenderer,
@@ -233,6 +70,7 @@ export default function GeoList({
   filterDefs,
   selectedFeatureEffect,
   detailsRenderer,
+  getPopupContent,
 }) {
   const [showMap, setShowMap] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
@@ -312,7 +150,7 @@ export default function GeoList({
               <div className={selectedFeature ? "d-none" : ""}>
                 <Row>
                   <Col>
-                    <TableSearch
+                    <ListSearch
                       setSelectedFeature={setSelectedFeature}
                       filters={filters}
                       setFilters={setFilters}
@@ -325,7 +163,6 @@ export default function GeoList({
                       features={filteredGeosjon?.features}
                       onRowClick={onRowClick}
                       listItemRenderer={listItemRenderer}
-                      selectedFeature={selectedFeature}
                       setSelectedFeature={setSelectedFeature}
                     />
                   </Col>
@@ -346,6 +183,7 @@ export default function GeoList({
                   selectedFeature={selectedFeature}
                   setSelectedFeature={setSelectedFeature}
                   onFeatureClick={onFeatureClick}
+                  getPopupContent={getPopupContent}
                 />
               </Col>
             </Row>
@@ -376,6 +214,7 @@ export default function GeoList({
               selectedFeature={selectedFeature}
               setSelectedFeature={setSelectedFeature}
               onFeatureClick={onFeatureClick}
+              getPopupContent={getPopupContent}
             />
           </MapModal>
         )}

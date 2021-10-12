@@ -49,17 +49,6 @@ export const SIGNAL_RETIMING_QUERY = {
   ],
 };
 
-export const SIGNAL_STUDIES_QUERY = {
-  resourceId: "sgur-43uy",
-  format: "geojson",
-  args: [
-    {
-      key: "limit",
-      value: "99999999",
-    },
-  ],
-};
-
 export const SIGNAL_PROJECTS_QUERY = {
   resourceId: "sgv2-7xw2",
   format: "json",
@@ -70,6 +59,26 @@ export const SIGNAL_PROJECTS_QUERY = {
     },
   ],
 };
+
+export const SIGNAL_EVALUATIONS_QUERY = {
+  resourceId: "fnxd-mtmb",
+  format: "geojson",
+  args: [
+    {
+      key: "limit",
+      value: "99999999",
+    },
+    {
+      key: "order",
+      value: "location_name asc",
+    },
+    {
+      key: "select",
+      value: "atd_location_id,location_name,location_status,council_district,location",
+    },
+  ],
+};
+
 
 export const SIGNAL_STATUS_QUERY = {
   resourceId: "5zpr-dehc",
@@ -105,25 +114,6 @@ export const SIGNALS_QUERY = {
     {
       key: "select",
       value: "location_name,signal_id,signal_type,signal_status,location",
-    },
-  ],
-};
-
-export const SIGNAL_LOCATIONS_QUERY = {
-  resourceId: "rfuv-5rhh",
-  format: "geojson",
-  args: [
-    {
-      key: "limit",
-      value: "99999999",
-    },
-    {
-      key: "order",
-      value: "atd_location_id asc",
-    },
-    {
-      key: "select",
-      value: "atd_location_id,location",
     },
   ],
 };

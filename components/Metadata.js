@@ -4,14 +4,14 @@ import Row from "react-bootstrap/Row";
 import { useSocrataMetadata } from "../utils/socrata";
 import { FaDownload } from "react-icons/fa";
 
-export const DataMetaData = ({ resourceId }) => {
+export default function DataMetaData({ resourceId }) {
   const { data, loading, error } = useSocrataMetadata({ resourceId });
   if (loading) {
     return <span>Loading...</span>;
   }
 
   // todo: be better
-  if (error || !data) return <p>{error?.message || "something went wrong"}</p>
+  if (error || !data) return <p>{error?.message || "something went wrong"}</p>;
 
   const updatedAt = new Date(data.rowsUpdatedAt * 1000).toLocaleString();
   const downloadUrl = `https://data.austintexas.gov/dataset/Traffic-Signals-and-Pedestrian-Signals/${resourceId}`;
@@ -34,4 +34,4 @@ export const DataMetaData = ({ resourceId }) => {
       </Col>
     </Row>
   );
-};
+}

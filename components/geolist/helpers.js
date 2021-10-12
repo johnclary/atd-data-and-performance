@@ -199,7 +199,10 @@ export const useMap = (mapContainerRef, mapRef) => {
       ...MAP_OPTIONS_DEFAULT,
     });
     mapRef.current.addControl(
-      new mapboxgl.NavigationControl({ visualizePitch: false, showCompass: false }),
+      new mapboxgl.NavigationControl({
+        visualizePitch: false,
+        showCompass: false,
+      }),
       "bottom-right"
     );
     mapRef.current.once("load").then(() => setIsMapLoaded(true));
@@ -211,17 +214,25 @@ export const useMap = (mapContainerRef, mapRef) => {
 /**
  * Add a point marker to a map
  **/
-export const Marker = ({ map, feature }) => {
+export const Popup = ({ map, feature, getPopupContent }) => {
   const markerRef = useRef();
 
   useEffect(() => {
-    const marker = new mapboxgl.Marker(markerRef)
+    const popup = new mapboxgl.Popup({closeButton: false})
       .setLngLat([
         feature.geometry.coordinates[0],
         feature.geometry.coordinates[1],
       ])
-      .addTo(map);
-    return () => marker.remove();
+      .setHTML(`<span>${getPopupContent(feature)}</span>`)
+    
+    popup.addTo(map);
+    // const marker = new mapboxgl.Marker({color: "#FFFFFF"})
+    //   .setLngLat([
+    // feature.geometry.coordinates[0],
+    // feature.geometry.coordinates[1],
+    //   ])
+    //   .addTo(map);
+    return () => popup.remove();
   });
 
   return <div ref={markerRef} />;

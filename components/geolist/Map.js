@@ -1,7 +1,7 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import React, { useEffect } from "react";
 import Spinner from "react-bootstrap/Spinner";
-import { addPointLayer, useMap, Marker } from "./helpers";
+import { addPointLayer, useMap, Popup } from "./helpers";
 import styles from "../../styles/Map.module.css";
 
 /**
@@ -14,6 +14,7 @@ export default function Map({
   mapRef,
   selectedFeature,
   onFeatureClick,
+  getPopupContent
 }) {
   const isMapLoaded = useMap(mapContainerRef, mapRef);
 
@@ -43,8 +44,8 @@ export default function Map({
     <div className={styles["map-container"]} ref={mapContainerRef}>
       {selectedFeature && (
         <>
-          {selectedFeature.geometry.type === "Point" && (
-            <Marker map={mapRef.current} feature={selectedFeature} />
+          {getPopupContent && (
+            <Popup map={mapRef.current} feature={selectedFeature} getPopupContent={getPopupContent}/>
           )}
         </>
       )}

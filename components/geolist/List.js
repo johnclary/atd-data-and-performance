@@ -1,6 +1,5 @@
 import React from "react";
-import ListGroup from "react-bootstrap/ListGroup";
-import { Collapse, Fade } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 
 /**
  * A Bootstrap table component which renders geojson features as table rows.
@@ -10,12 +9,7 @@ import { Collapse, Fade } from "react-bootstrap";
  * @param { function(object) } onRowClick - An optional callback function which accepts a single feature and will be called when a table row is clicked.
  */
 
-export default function Table({
-  features,
-  listItemRenderer,
-  onRowClick,
-  selectedFeature,
-}) {
+export default function List({ features, listItemRenderer, onRowClick }) {
   if (!features || features.length === 0) {
     // TODO: render something helpful? e.g., "No data to display"
     return null;
