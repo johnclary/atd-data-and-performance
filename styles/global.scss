@@ -25,7 +25,16 @@ body {
 }
 
 .card:hover {
-    box-shadow: 4px 4px 4px 1px gainsboro !important;
+    box-shadow: 1px 1px 8px 1px gainsboro !important;
+}
+
+.card {
+    border-radius: .5rem !important;
+}
+
+.card-img-top {
+    border-top-left-radius: calc(0.5rem - 1px) !important;
+    border-top-right-radius: calc(0.5rem - 1px) !important;
 }
 
 .form-check-input:checked {
@@ -86,5 +95,28 @@ body {
         border-width: 1px;
     }
 }
+
+.mapboxgl-popup-content {
+    font-family: IBM Plex Sans, sans-serif !important;
+    background-color: rgba(54, 54, 54, .8) !important;
+    color: white;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+    border-top-color: rgba(54, 54, 54, .8) !important;
+}
+
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+    border-bottom-color: rgba(54, 54, 54, .8) !important;
+}
+
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+    border-right-color: rgba(54, 54, 54, .8) !important;
+}
+
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+    border-left-color: rgba(54, 54, 54, .8) !important;
+}
+
 
 @import "node_modules/bootstrap/scss/bootstrap";
