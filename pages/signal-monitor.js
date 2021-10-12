@@ -4,11 +4,11 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { ListGroup } from "react-bootstrap";
 import { FaExclamationTriangle, FaClock, FaPhone } from "react-icons/fa";
-import { Spinner } from "../components/Spinner";
+import Spinner from "../components/Spinner";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
-import { DataMetaData } from "../components/Metadata";
+import DataMetaData from "../components/Metadata";
 import { useSocrata } from "../utils/socrata.js";
 import { SIGNAL_STATUS_QUERY } from "../components/queries";
 

@@ -13,7 +13,8 @@ import {
   FaExclamationTriangle,
   FaVideo,
   FaWrench,
-  FaBicycle
+  FaBicycle,
+  FaClipboard
 } from "react-icons/fa";
 
 // image size: 960 x 491px
@@ -25,6 +26,14 @@ const cards = [
     href: "/signal-projects",
     key: "signal_projects",
     icon: <FaWrench />,
+  },
+  {
+    title: "Signal Evaluations",
+    description:
+      "Our signal evaluation pipeline",
+    href: "/signal-evaluations",
+    key: "signal_evaluations",
+    icon: <FaClipboard />,
   },
   {
     title: "Signal Monitor",
@@ -93,7 +102,7 @@ export function CardItem({ href, title, description, icon, img }) {
     <Col key={href} xs={12} md={4} lg={3} className="pb-3">
       <Link className="text-primary text-decoration-none" href={href} passHref>
         <div style={{ cursor: "pointer", height: "100%" }}>
-          <Card style={{ borderRadius: 15 }} className="h-100 shadow-sm">
+          <Card className="h-100 shadow-sm">
             {img && <Card.Img variant="top" alt={img.alt} src={img.src} />}
             <Card.Body>
               <Card.Title className="text-primary">

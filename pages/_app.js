@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/global.scss";
-import { Spinner } from "../components/Spinner";
+import CustomHead from "./CustomHead";
+import Spinner from "../components/Spinner";
 
 function App({ Component, pageProps }) {
   const router = useRouter();
@@ -31,7 +32,7 @@ function App({ Component, pageProps }) {
     return (
       <Spinner/>
     );
-  return <Component {...pageProps} />;
+  return <><CustomHead /><Component {...pageProps} /></>;
 }
 
 export default App;

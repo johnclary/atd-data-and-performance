@@ -1,15 +1,17 @@
 import React from "react";
-import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
-import { ListGroup } from "react-bootstrap";
-import Row from "react-bootstrap/Row";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  InputGroup,
+  ListGroup,
+} from "react-bootstrap";
 import { Cell, Label, Pie, PieChart, ResponsiveContainer } from "recharts";
 import Footer from "../components/Footer";
 import GeoList from "../components/geolist/GeoList";
 import Nav from "../components/Nav";
-import { DataMetaData } from "../components/Metadata";
+import DataMetaData from "../components/Metadata";
 import { useSocrata } from "../utils/socrata.js";
 import {
   SIGNAL_RETIMING_QUERY,
@@ -108,16 +110,6 @@ const detailsRenderer = (feature) => {
       </ListGroup>
     </Col>
   );
-};
-
-const mapOverlayConfig = {
-  titleKey: "system_name",
-  bodyKeys: [
-    { key: "retime_status", label: "Status" },
-    { key: "signal_count", label: "# of Signals" },
-    { key: "vol_wavg_tt_pct_change", label: "Travel Time Change" },
-    { key: "engineer_note", label: "Note" },
-  ],
 };
 
 // Styling effect which will be called when selectedFeature changes
@@ -483,7 +475,6 @@ export default function Viewer() {
             </Row>
           </Col>
         </Row>
-        <DataMetaData resourceId={SIGNAL_RETIMING_QUERY.resourceId} />
         <GeoList
           detailsRenderer={detailsRenderer}
           geojson={signalCorridorsFiltered}
@@ -492,6 +483,7 @@ export default function Viewer() {
           selectedFeatureEffect={selectedFeatureEffect}
           listItemRenderer={listItemRenderer}
         />
+        <DataMetaData resourceId={SIGNAL_RETIMING_QUERY.resourceId} />
       </Container>
       <Footer />
     </>
