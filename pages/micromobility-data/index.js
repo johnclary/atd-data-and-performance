@@ -11,7 +11,7 @@ import Nav from "../../components/Nav";
 import Footer from "../../components/Footer";
 import { useSocrata } from "../../utils/socrata.js";
 import DatePicker from "../../components/DatePicker";
-import TripChart from "./trips";
+import TripChart from "../../components/TripChart";
 import {
   MICROMOBILITY_BY_MODE_QUERY,
   MICROMOBILITY_DEVICE_COUNT_QUERY,
@@ -23,39 +23,29 @@ import styles from "../../styles/Micromobility.module.css";
 // TODO
 console.log("remember to handle silent (and not silent) socrata errors...");
 
+/**
+ * Format a socrata friendly date string.
+ *
+ * Our queries use Socrata's `BETWEEN` expression, which is inclusive of all records that match
+ * the start or end range. so our start_time must be at 0:00 hours local and end_time must be at
+ * 11:59:59 local.
+ *
+ */
 const formatSocrataDate = (date, name) => {
-  // Format a socrata friendly date string...preserving UTC along the way to avoid localization issues
   if (!date) return null;
-
+  // set hours/min/seconds to 00:00:00
   let queryDate = new Date(date.toDateString());
-  if (name == "startDate") {
-    // set start date to 11:59:59pm the day before
-    queryDate.setDate(queryDate.getDate() - 1);
+  if (name == "endDate") {
+    // set to 11:59:59pm
     queryDate.setHours(23);
     queryDate.setMinutes(59);
     queryDate.setSeconds(59);
   }
-  if (name == "endDate") {
-    // set end date to 12am the day after
-    queryDate.setDate(queryDate.getDate() + 1);
-  }
-  // drop milliseconds and return ISO string for socrata :)
+  // format as UTC ISO string and drop millesconds and tz
   return queryDate.toISOString().split(".")[0];
-  // const year = newDate.getUTCFullYear();
-  // // get each date component in UTC, ensuring two digits
-  // let month = ("0" + (newDate.getUTCMonth() + 1)).slice(-2)
-  // const day = ("0" + newDate.getUTCDate()).slice(-2)
-  // const hours = ("0" + newDate.getUTCHours()).slice(-2)
-  // const minutes = ("0" + newDate.getUTCMinutes()).slice(-2)
-  // const seconds = ("0" + newDate.getUTCSeconds()).slice(-2)
-  // // componse ISO string
-  // debugger;
-  // const it = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-  // console.log(`input ${name}`, date.getTime())
-  // console.log("output", it)
 };
 
-const formatQuery = ({ queryString, queryDates }) => {
+const formatQueryString = ({ queryString, queryDates }) => {
   // replace placeholder args with current values from state of queryParams
   Object.keys(queryDates).forEach((arg) => {
     queryString = queryString.replace(
@@ -66,15 +56,22 @@ const formatQuery = ({ queryString, queryDates }) => {
   return queryString;
 };
 
+const formatQuery = ({ queryDef, queryDates }) => {
+  // we deep copy the queryDef, which is immutable and retains the placeholder param names
+  let mutableQuery = { ...queryDef, args: [...queryDef.args] };
+  // todo: we assume the first argument in the queryDef is the `query` param. gross?
+  let queryString = mutableQuery.args[0].value.slice();
+  queryString = formatQueryString({ queryString, queryDates });
+  mutableQuery.args[0] = { key: "query", value: queryString };
+  return mutableQuery;
+};
+
 const useQuery = ({ queryDef, queryDates }) => {
-  const [query, setQuery] = React.useState(queryDef);
+  const [query, setQuery] = React.useState(
+    formatQuery({ queryDef, queryDates })
+  );
   React.useEffect(() => {
-    // we deep copy the queryDef, which is immutable and retains the placeholder param names
-    let mutableQuery = { ...queryDef, args: [...queryDef.args] };
-    // todo: we assume the first argument in the queryDef is the `query` param. gross?
-    let queryString = mutableQuery.args[0].value.slice();
-    queryString = formatQuery({ queryString, queryDates });
-    mutableQuery.args[0] = { key: "query", value: queryString };
+    const mutableQuery = formatQuery({ queryDef, queryDates });
     setQuery(mutableQuery);
   }, [queryDates, queryDef]);
   return query;
@@ -218,7 +215,7 @@ const Table = ({ dataByMode, deviceCount, threeOneOne }) => {
   addAllModesTotals(tableRowData);
 
   return (
-    <BsTable className="table-borderless" responsive hover>
+    <BsTable className="table-borderless" responsive hover striped>
       <thead className={styles["table-header"]}>
         <tr>
           <th key="metric_name"></th>
@@ -374,7 +371,7 @@ export default function Viewer() {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={5}>
+          <Col xs={12} lg={6}>
             <div>
               {dataByMode.data &&
                 deviceCount.data &&
@@ -408,7 +405,7 @@ export default function Viewer() {
                 dataByMode.data?.length === 0 && <p>No records found.</p>}
             </div>
           </Col>
-          <Col xs={12} md={7}>
+          <Col xs={12} lg={6}>
             <TripChart {...tripsByDay} />
           </Col>
         </Row>
