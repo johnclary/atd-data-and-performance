@@ -419,6 +419,21 @@ export default function Viewer() {
       </>
     );
 
+  if (signalCorridorsRaw.loading || retimingDataRaw.loading)
+    return (
+      <>
+        <Nav />
+        <Container fluid>
+          <Row>
+            <Col>
+              <p>Loading...</p>
+            </Col>
+          </Row>
+        </Container>
+        <Footer />
+      </>
+    );
+
   return (
     <>
       <Nav />
