@@ -20,24 +20,25 @@ import {
   FaTools,
   FaRegTimesCircle,
   FaCheckCircle,
+  FaSearch,
 } from "react-icons/fa";
 
 const STATUS_DEFS = [
   {
     location_statuses: ["archived", "ineligible"],
-    status_simple: "Closed",
-    checked: true,
+    status_simple: "Inactive",
+    checked: false,
     icon: FaRegTimesCircle,
   },
   {
     location_statuses: ["recently received", "evaluated"],
-    status_simple: "Identification",
+    status_simple: "Active",
     checked: true,
-    icon: FaMapMarkerAlt,
+    icon: FaSearch,
   },
   {
     location_statuses: ["study in progress", "selected for study"],
-    status_simple: "Evaluation",
+    status_simple: "Engineering study",
     checked: true,
     icon: FaCalculator,
   },
@@ -54,21 +55,9 @@ const STATUS_DEFS = [
     icon: FaDollarSign,
   },
   {
-    location_statuses: [
-      "recommended (funded)",
-      "ready for design",
-      "design",
-      "construction",
-      "ready for construction",
-    ],
-    status_simple: "In development",
+    location_statuses: ["recommended (funded)"],
+    status_simple: "Ready for design",
     checked: true,
-    icon: FaTools,
-  },
-  {
-    location_statuses: "turned_on",
-    status_simple: "Built / Turned on",
-    checked: false,
     icon: FaCheckCircle,
   },
 ];
@@ -162,6 +151,7 @@ const listItemRenderer = (feature) => {
       </p>
       <div className="d-flex w-100 justify-content-end align-items-center">
         {Icon && <Icon className="me-1 text-muted" />}
+        {/* <span className="text-muted" style={{width: "8rem"}}> */}
         <span className="text-muted">
           <small>{feature.properties.location_status_simple}</small>
         </span>
@@ -192,6 +182,7 @@ const getCheckboxFilterDefs = (statusDefs) => {
       featureProp: "location_status_simple",
       label: statusDef.status_simple,
       checked: statusDef.checked,
+      icon: statusDef.icon
     };
   });
 };
