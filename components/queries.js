@@ -76,6 +76,10 @@ export const SIGNAL_EVALUATIONS_QUERY = {
       key: "select",
       value: "atd_location_id,location_name,location_status,council_district,location",
     },
+    {
+      key: "where",
+      value: "lower(location_status) in ('archived', 'ineligible', 'recently received', 'evaluated', 'study in progress', 'selected for study', 'not recommended', 'recommended (needs funding)', 'recommended (funded)')",
+    },
   ],
 };
 
@@ -147,13 +151,24 @@ export const MICROMOBILITY_DEVICE_COUNT_QUERY = {
   ],
 };
 
+// export const MICROMOBILITY_311_QUERY = {
+//   resourceId: "xwdj-i9he",
+//   format: "json",
+//   args: [
+//     {
+//       key: "query",
+//       value: `SELECT count(sr_type_desc) WHERE sr_created_date between '$startDate' AND '$endDate' AND (contains(upper(\`sr_type_desc\`), upper('dockless')))`,
+//     },
+//   ],
+// };
+
 export const MICROMOBILITY_311_QUERY = {
   resourceId: "xwdj-i9he",
   format: "json",
   args: [
     {
       key: "query",
-      value: `SELECT count(sr_type_desc) WHERE sr_created_date between '$startDate' AND '$endDate' AND (contains(upper(\`sr_type_desc\`), upper('dockless')))`,
+      value: `SELECT count(sr_type_desc) WHERE sr_created_date between '$startDate' AND '$endDate' AND (  (contains(upper(\`sr_type_desc\`), upper('micromobility'))) OR (contains(upper(\`sr_type_desc\`), upper('docklesss'))) )`,
     },
   ],
 };
@@ -164,7 +179,7 @@ export const MICROMOBILITY_TRIPS_BY_DAY_QUERY = {
   args: [
     {
       key: "query",
-      value: `SELECT date_trunc_ymd(start_time) as date, count(trip_id) as count where start_time BETWEEN '$startDate' AND '$endDate' AND ${tripFiltersQuery} group by date order by date asc`,
+      value: `SELECT date_trunc_ymd(start_time_us_central) as date, count(trip_id) as count where start_time BETWEEN '$startDate' AND '$endDate' AND ${tripFiltersQuery} and start_time_us_central is not null group by date order by date asc`,
     },
   ],
 };
